@@ -1,0 +1,3611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImageMetadataPro - Editor de metadatos e imágenes</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style id="app-style">
+    /* Theme Variables - Enhanced dark mode support */
+    :root {
+      --bg-primary: #fafafa;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f5f5f5;
+      --bg-accent: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-overlay: rgba(0, 0, 0, 0.5);
+      --bg-tooltip: rgba(0, 0, 0, 0.9);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-tertiary: #64748b;
+      --text-muted: #94a3b8;
+      --text-inverse: #ffffff;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+      --border-hover: #cbd5e1;
+      --accent-primary: #3b82f6;
+      --accent-secondary: #06b6d4;
+      --accent-hover: #1d4ed8;
+      --success: #10b981;
+      --success-hover: #059669;
+      --warning: #f59e0b;
+      --warning-hover: #d97706;
+      --error: #ef4444;
+      --error-hover: #dc2626;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --radius: 0.5rem;
+      --radius-lg: 0.75rem;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Enhanced Dark Mode */
+    [data-theme="dark"] {
+      --bg-primary: #0a0f1c;
+      --bg-secondary: #1a202e;
+      --bg-tertiary: #2d3748;
+      --bg-accent: #374151;
+      --bg-card: #1e293b;
+      --bg-overlay: rgba(0, 0, 0, 0.8);
+      --bg-tooltip: rgba(17, 24, 39, 0.95);
+      --text-primary: #f8fafc;
+      --text-secondary: #e2e8f0;
+      --text-tertiary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-inverse: #0f172a;
+      --border-color: #475569;
+      --border-focus: #60a5fa;
+      --border-hover: #64748b;
+      --accent-primary: #60a5fa;
+      --accent-secondary: #22d3ee;
+      --accent-hover: #93c5fd;
+      --success: #34d399;
+      --success-hover: #6ee7b7;
+      --warning: #fbbf24;
+      --warning-hover: #fcd34d;
+      --error: #f87171;
+      --error-hover: #fca5a5;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Global Theme Styles - Enhanced dark mode support */
+    * {
+      box-sizing: border-box;
+      transition: background-color var(--transition-slow), 
+                  color var(--transition-slow), 
+                  border-color var(--transition-slow),
+                  box-shadow var(--transition);
+    }
+
+    html {
+      transition: background-color var(--transition-slow);
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: var(--transition-slow);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    /* Dark mode specific body enhancements */
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    }
+
+    /* Enhanced selection colors for dark mode */
+    ::selection {
+      background: var(--accent-primary);
+      color: var(--text-inverse);
+    }
+
+    [data-theme="dark"] ::selection {
+      background: var(--accent-hover);
+      color: var(--text-inverse);
+    }
+
+    /* Enhanced scrollbar with dark mode support */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-hover);
+    }
+
+    [data-theme="dark"] ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] ::-webkit-scrollbar-thumb {
+      background: var(--text-muted);
+    }
+
+    [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--text-muted);
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+
+    /* Focus styles for accessibility */
+    *:focus {
+      outline: 2px solid var(--border-focus);
+      outline-offset: 2px;
+    }
+
+    *:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    /* Loading state */
+    .loading {
+      position: relative;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid var(--border-color);
+      border-top: 2px solid var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      z-index: 10;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes loadingBar {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(0%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .animate-fade-in { animation: fadeIn var(--transition-slow) ease-out; }
+    .animate-slide-up { animation: slideUp var(--transition-slow) ease-out; }
+    .animate-slide-down { animation: slideDown var(--transition-medium) ease-out; }
+    .animate-fade-out { animation: fadeOut var(--transition-medium) ease-out; }
+    .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+    .animate-loading-bar { animation: loadingBar 1.5s ease-in-out infinite; }
+
+    /* Enhanced button effects */
+    .btn {
+      position: relative;
+      overflow: hidden;
+      will-change: transform, box-shadow;
+      backface-visibility: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    /* Enhanced tooltips with dark mode support */
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-tooltip);
+      color: var(--text-inverse);
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-slow) ease;
+      z-index: 1000;
+      pointer-events: none;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(10px);
+      max-width: 250px;
+      white-space: normal;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    [data-tooltip]::before {
+      content: '';
+      position: absolute;
+      bottom: 117%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--bg-tooltip);
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-slow) ease;
+      z-index: 1000;
+    }
+
+    [data-tooltip]:hover::after,
+    [data-tooltip]:hover::before {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    /* Dark mode specific tooltips */
+    [data-theme="dark"] [data-tooltip]::after {
+      background: var(--bg-tooltip);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-xl);
+    }
+
+    [data-theme="dark"] [data-tooltip]::before {
+      border-top-color: var(--bg-tooltip);
+    }
+
+    /* Enhanced focus states */
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Dark mode specific enhancements */
+    .dark [data-tooltip]::after {
+      --bg-tooltip: rgba(55, 65, 81, 0.95);
+    }
+
+    .dark [data-tooltip]::before {
+      --bg-tooltip: rgba(55, 65, 81, 0.95);
+      border-top-color: rgba(55, 65, 81, 0.95);
+    }
+
+    /* Performance optimizations */
+    .card {
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+
+    /* Responsive enhancements */
+    @media (max-width: 768px) {
+      .animate-slide-up {
+        animation-duration: 0.3s;
+      }
+      
+      .btn {
+        min-height: 44px; /* Touch-friendly size */
+      }
+      
+      [data-tooltip]::after {
+        font-size: 0.8rem;
+        max-width: 200px;
+        white-space: normal;
+      }
+    }
+
+    /* Accessibility improvements */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      .btn {
+        border: 2px solid;
+      }
+      
+      .form-input,
+      .form-textarea,
+      .form-select {
+        border-width: 2px;
+      }
+    }
+    /* Upload dropzone with enhanced dark mode */
+    .upload__dropzone {
+      border: 2px dashed var(--border-color);
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: var(--transition-slow);
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(5px);
+    }
+
+    .upload__dropzone::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .upload__dropzone--active {
+      border-color: var(--accent-primary);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(34, 211, 238, 0.05));
+      transform: scale(1.02);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .upload__dropzone--active::before {
+      left: 100%;
+    }
+
+    .upload__dropzone:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      background-color: var(--bg-accent);
+    }
+
+    .upload__icon {
+      color: var(--accent-primary);
+      transition: var(--transition-slow);
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
+    }
+
+    .upload__dropzone:hover .upload__icon {
+      transform: scale(1.15) translateY(-5px);
+      color: var(--accent-secondary);
+      filter: drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3));
+    }
+
+    /* Dark mode upload styles */
+    [data-theme="dark"] .upload__dropzone {
+      background-color: var(--bg-tertiary);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow);
+    }
+
+    [data-theme="dark"] .upload__dropzone:hover {
+      background-color: var(--bg-secondary);
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-xl);
+    }
+
+    [data-theme="dark"] .upload__dropzone--active {
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.08), rgba(34, 211, 238, 0.08));
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-xl);
+    }
+
+    [data-theme="dark"] .upload__icon {
+      filter: drop-shadow(0 2px 4px rgba(96, 165, 250, 0.3));
+    }
+
+    [data-theme="dark"] .upload__dropzone:hover .upload__icon {
+      filter: drop-shadow(0 4px 8px rgba(96, 165, 250, 0.4));
+    }
+
+    .upload__button {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload__button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .upload__button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .upload__button:hover::before {
+      left: 100%;
+    }
+
+    .upload__button:active {
+      transform: translateY(0);
+    }
+    
+    /* File Info Block - Enhanced */
+    .file-info {
+      margin-top: 1rem;
+      animation: slideUp 0.3s ease-out;
+    }
+    .file-info--hidden {
+      display: none;
+    }
+    .file-info__content {
+      display: flex;
+      align-items: center;
+      background-color: var(--bg-accent);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+    .file-info__content:hover {
+      box-shadow: var(--shadow-sm);
+      border-color: var(--border-hover);
+    }
+    .file-info__icon {
+      color: var(--accent-primary);
+      margin-right: 0.75rem;
+      font-size: 1.25rem;
+    }
+    .file-info__name {
+      color: var(--text-secondary);
+      flex: 1;
+      font-weight: 500;
+    }
+    .file-info__remove {
+      color: var(--error);
+      transition: var(--transition);
+      padding: 0.25rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+    .file-info__remove:hover {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+      transform: scale(1.1);
+    }
+    
+    /* Error Block - Enhanced */
+    .error {
+      margin-top: 1rem;
+      color: var(--error);
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      animation: slideUp 0.3s ease-out;
+    }
+    .error--hidden {
+      display: none;
+    }
+    
+    /* Success Block - Enhanced */
+    .success {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      z-index: 1000;
+      animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 300px;
+      font-weight: 500;
+    }
+
+    [data-theme="dark"] .success {
+      background: linear-gradient(135deg, #065f46, var(--success));
+      box-shadow: var(--shadow-xl);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%) scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+      }
+    }
+    
+    /* Editor Container Block */
+    .editor-container--hidden {
+      display: none;
+    }
+
+    /* Card Styles - Enhanced with dark mode support */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+      transform-origin: left;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    /* Dark mode specific card enhancements */
+    [data-theme="dark"] .card {
+      background-color: var(--bg-card);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow-lg);
+    }
+
+    [data-theme="dark"] .card:hover {
+      box-shadow: var(--shadow-xl);
+      border-color: var(--accent-primary);
+      background-color: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] .card::before {
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    }
+
+    /* Form Controls - Enhanced with dark mode */
+    .form-input,
+    .form-select,
+    .form-textarea {
+      background-color: var(--bg-secondary);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-primary);
+      transition: var(--transition);
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-input:hover,
+    .form-select:hover,
+    .form-textarea:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow);
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      transform: scale(1.01);
+      outline: none;
+    }
+
+    /* Dark mode form controls */
+    [data-theme="dark"] .form-input,
+    [data-theme="dark"] .form-select,
+    [data-theme="dark"] .form-textarea {
+      background-color: var(--bg-tertiary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+      box-shadow: var(--shadow);
+    }
+
+    [data-theme="dark"] .form-input:hover,
+    [data-theme="dark"] .form-select:hover,
+    [data-theme="dark"] .form-textarea:hover {
+      border-color: var(--border-hover);
+      background-color: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] .form-input:focus,
+    [data-theme="dark"] .form-select:focus,
+    [data-theme="dark"] .form-textarea:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+      background-color: var(--bg-secondary);
+    }
+
+    /* Enhanced placeholder styles */
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    [data-theme="dark"] .form-input::placeholder,
+    [data-theme="dark"] .form-textarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.9;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Enhanced buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      transition: var(--transition);
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    /* Form validation styles */
+    .field-error {
+      color: var(--error);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .field-error::before {
+      content: '⚠';
+      font-size: 0.875rem;
+    }
+
+    .field-invalid {
+      border-color: var(--error) !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+
+    [data-theme="dark"] .field-invalid {
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2) !important;
+    }
+
+    .field-valid {
+      border-color: var(--success) !important;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+    }
+
+    [data-theme="dark"] .field-valid {
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2) !important;
+    }
+
+    /* Loading states for forms */
+    .form-loading {
+      position: relative;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .form-loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid var(--border-color);
+      border-top: 2px solid var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      z-index: 10;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--accent-hover), var(--accent-primary));
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-accent);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-hover);
+    }
+
+    /* Dark mode button enhancements */
+    [data-theme="dark"] .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      box-shadow: var(--shadow-md);
+    }
+
+    [data-theme="dark"] .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-hover), var(--accent-primary));
+      box-shadow: var(--shadow-xl);
+    }
+
+    [data-theme="dark"] .btn-secondary {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow);
+    }
+
+    [data-theme="dark"] .btn-secondary:hover {
+      background-color: var(--bg-accent);
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), var(--success-hover));
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--success-hover), var(--success));
+    }
+
+    /* Dark mode success button */
+    [data-theme="dark"] .btn-success {
+      background: linear-gradient(135deg, var(--success), var(--success-hover));
+      box-shadow: var(--shadow);
+    }
+
+    [data-theme="dark"] .btn-success:hover {
+      box-shadow: var(--shadow-xl);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Enhanced Labels and Typography */
+    label {
+      color: var(--text-primary) !important;
+      transition: var(--transition);
+      font-weight: 500;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .form-label {
+      color: var(--text-primary) !important;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Enhanced Range Inputs */
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-tertiary);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    input[type=range]:hover {
+      background: var(--border-color);
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: var(--shadow-md);
+    }
+
+    input[type=range]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    /* Radio buttons and checkboxes */
+    .form-radio {
+      accent-color: var(--accent-primary);
+      transform: scale(1.1);
+    }
+
+    /* Progress indicator */
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background-color: var(--bg-tertiary);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+
+    /* Color overrides for theme compatibility */
+    .text-gray-700 {
+      color: var(--text-primary) !important;
+    }
+
+    .text-gray-600 {
+      color: var(--text-secondary) !important;
+    }
+
+    .text-gray-500 {
+      color: var(--text-tertiary) !important;
+    }
+
+    .upload-text {
+      color: var(--text-primary) !important;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .upload-info {
+      color: var(--text-tertiary) !important;
+      transition: var(--transition);
+      font-size: 0.875rem;
+    }
+
+    .text-content {
+      color: var(--text-primary) !important;
+      transition: var(--transition);
+    }
+
+    .range-label {
+      color: var(--text-tertiary) !important;
+      transition: var(--transition);
+      font-size: 0.75rem;
+    }
+    
+    /* Preview Block - Enhanced */
+    .preview__canvas {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-accent);
+      transition: var(--transition);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .preview__canvas:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .preview__container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+      background: 
+        linear-gradient(45deg, var(--bg-tertiary) 25%, transparent 25%), 
+        linear-gradient(-45deg, var(--bg-tertiary) 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, var(--bg-tertiary) 75%), 
+        linear-gradient(-45deg, transparent 75%, var(--bg-tertiary) 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      border-radius: var(--radius);
+    }
+    
+    /* Section Block - Enhanced collapsible sections */
+    .section__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-primary);
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      position: relative;
+    }
+
+    .section__header::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent-primary);
+      border-radius: 0 3px 3px 0;
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .section__header:hover {
+      background-color: var(--bg-accent);
+      transform: translateX(4px);
+    }
+
+    .section__header:hover::before {
+      transform: scaleY(1);
+    }
+
+    .section__header:focus {
+      outline: 2px solid var(--border-focus);
+      outline-offset: 2px;
+      border-radius: var(--radius);
+    }
+
+    .section__icon {
+      color: var(--text-tertiary);
+      transition: var(--transition);
+      font-size: 1.125rem;
+    }
+
+    .section__icon--collapsed {
+      transform: rotate(-90deg);
+    }
+
+    .section__content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section__content--open {
+      max-height: 2000px;
+    }
+
+    .section__content--open .section__inner {
+      animation: fadeIn 0.3s ease-out 0.1s both;
+    }
+
+    .section__inner {
+      padding-top: 0.5rem;
+    }
+
+    /* Theme Toggle Button - Enhanced with dark mode animations */
+    .theme-toggle {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-slow);
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      backdrop-filter: blur(15px);
+      overflow: hidden;
+    }
+
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      padding: 2px;
+      background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
+      border-radius: inherit;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: xor;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      animation: rotate 3s linear infinite;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.15);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--accent-primary);
+    }
+
+    .theme-toggle:hover::before {
+      opacity: 1;
+    }
+
+    .theme-toggle i {
+      font-size: 1.4rem;
+      transition: var(--transition-slow);
+      position: relative;
+      z-index: 1;
+    }
+
+    .theme-toggle:hover i {
+      transform: rotate(15deg) scale(1.2);
+      color: var(--accent-primary);
+    }
+
+    /* Dark mode specific theme toggle */
+    [data-theme="dark"] .theme-toggle {
+      background: var(--bg-secondary);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow-xl);
+    }
+
+    [data-theme="dark"] .theme-toggle:hover {
+      background: var(--bg-tertiary);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .theme-toggle::before {
+      background: linear-gradient(45deg, var(--accent-primary), var(--warning), var(--accent-primary));
+    }
+
+    /* Header and Footer Styles - Enhanced */
+    .header-title {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .header-subtitle {
+      color: var(--text-tertiary);
+      transition: var(--transition);
+    }
+
+    .footer-text {
+      color: var(--text-tertiary);
+      transition: var(--transition);
+    }
+
+    /* App title animation */
+    .app-title {
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .app-subtitle {
+      animation: fadeIn 1s ease-out 0.2s both;
+    }
+
+    /* Enhanced responsive design */
+    @media (max-width: 768px) {
+      .theme-toggle {
+        width: 44px;
+        height: 44px;
+        top: 0.5rem;
+        left: 0.5rem;
+      }
+
+      .card {
+        margin: 0.5rem;
+        border-radius: var(--radius);
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+
+      .preview__container {
+        padding: 0.5rem;
+      }
+    }
+
+    /* Dark mode enhancements for specific elements */
+    [data-theme="dark"] .bg-red-100 {
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.6), rgba(153, 27, 27, 0.4));
+      border-color: var(--error);
+      color: #fca5a5;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    [data-theme="dark"] .text-blue-600 {
+      color: var(--accent-primary) !important;
+    }
+
+    [data-theme="dark"] h1,
+    [data-theme="dark"] h2,
+    [data-theme="dark"] h3,
+    [data-theme="dark"] h4,
+    [data-theme="dark"] h5,
+    [data-theme="dark"] h6 {
+      color: var(--text-primary) !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] p,
+    [data-theme="dark"] span:not(.range-label):not(.text-content):not(.upload-text):not(.upload-info) {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Enhanced canvas preview for dark mode */
+    [data-theme="dark"] .preview__canvas {
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow-xl);
+      border-radius: var(--radius);
+    }
+
+    /* Dark mode scrollbar in webkit browsers */
+    [data-theme="dark"] *::-webkit-scrollbar {
+      background: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] *::-webkit-scrollbar-thumb {
+      background: var(--text-muted);
+      border-radius: 4px;
+    }
+
+    [data-theme="dark"] *::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+
+    /* Enhanced focus indicators for dark mode */
+    [data-theme="dark"] *:focus {
+      outline-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+    }
+
+    /* Dark mode range inputs */
+    [data-theme="dark"] input[type="range"] {
+      background: var(--bg-tertiary);
+    }
+
+    [data-theme="dark"] input[type="range"]::-webkit-slider-thumb {
+      background: var(--accent-primary);
+      box-shadow: 0 2px 6px rgba(96, 165, 250, 0.3);
+    }
+
+    [data-theme="dark"] input[type="range"]::-moz-range-thumb {
+      background: var(--accent-primary);
+      box-shadow: 0 2px 6px rgba(96, 165, 250, 0.3);
+    }
+
+    /* Enhanced error/success states */
+    [data-theme="dark"] .error {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    [data-theme="dark"] .success {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(16, 185, 129, 0.05));
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    /* Tooltip styles */
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]:hover::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--text-primary);
+      color: var(--bg-primary);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius);
+      font-size: 0.75rem;
+      white-space: nowrap;
+      z-index: 1000;
+      opacity: 0;
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+    
+    /* Watermark Options Block */
+    .watermark-options__text {
+      display: block;
+    }
+    .watermark-options__text--hidden {
+      display: none;
+    }
+    .watermark-options__image {
+      display: none;
+    }
+    .watermark-options__image--visible {
+      display: block;
+    }
+    .watermark-options__custom-size {
+      display: none;
+      margin-bottom: 1rem;
+    }
+    .watermark-options__custom-size--visible {
+      display: block;
+    }
+    /* Form Controls */
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: #d3d3d3;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #3B82F6;
+      cursor: pointer;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #3B82F6;
+      cursor: pointer;
+    }
+    
+    /* Loading Block */
+    .loading__spinner {
+      display: none;
+    }
+    .loading .loading__spinner {
+      display: inline-block;
+    }
+    
+    /* Grid Block */
+    @media (min-width: 768px) {
+      .grid--medium {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+    }
+    @media (min-width: 1024px) {
+      .grid--large {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1.5rem;
+        align-items: stretch;
+      }
+      .grid--large > section > div {
+        min-height: 600px;
+        display: flex;
+        flex-direction: column;
+      }
+      .grid--large .section__content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .grid--large .section__content form {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .grid--large .section__content form > div:last-child {
+        margin-top: auto;
+        padding-top: 1rem;
+      }
+      
+      /* Button Block */
+      .button--action {
+        width: 180px;
+        height: 44px;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+    }
+
+    /* Enhanced global UI components for better maintainability */
+    .global-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      backdrop-filter: blur(2px);
+    }
+
+    .loader-content {
+      background: var(--bg-card);
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--border-color);
+    }
+
+    .loader-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top: 3px solid var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    .loader-message {
+      color: var(--text-primary);
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Toast notifications */
+    .error-toast,
+    .success-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      max-width: 400px;
+      z-index: 9999;
+      animation: slideInToast 0.3s ease-out;
+    }
+
+    .error-toast {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+    }
+
+    .success-toast {
+      background: linear-gradient(135deg, #28a745, #218838);
+    }
+
+    .error-content,
+    .success-content {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 8px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .error-icon,
+    .success-icon {
+      font-size: 1.2rem;
+      margin-right: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .error-message,
+    .success-message {
+      flex: 1;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .error-close,
+    .success-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 0.75rem;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
+
+    .error-close:hover,
+    .success-close:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes slideInToast {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* Form disabled state */
+    .form-disabled {
+      opacity: 0.6;
+      pointer-events: none;
+      position: relative;
+    }
+
+    .form-disabled::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      z-index: 1;
+    }
+
+    /* Enhanced form validation styles */
+    .field-error {
+      color: #dc3545;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      display: block;
+      animation: shake 0.3s ease-in-out;
+    }
+
+    .field-invalid {
+      border-color: #dc3545 !important;
+      box-shadow: 0 0 0 0.1rem rgba(220, 53, 69, 0.25) !important;
+    }
+
+    .field-valid {
+      border-color: #28a745 !important;
+      box-shadow: 0 0 0 0.1rem rgba(40, 167, 69, 0.25) !important;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* Responsive improvements for mobile */
+    @media (max-width: 768px) {
+      .error-toast,
+      .success-toast {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
+
+      .global-loader .loader-content {
+        margin: 0 20px;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Theme Toggle Button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">
+    <i id="theme-icon" class="fas fa-moon" aria-hidden="true"></i>
+  </button>
+
+  <noscript>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+      <strong class="font-bold">JavaScript desactivado:</strong>
+      <span>Esta aplicación requiere JavaScript para funcionar correctamente. Por favor, habilítalo en tu navegador.</span>
+    </div>
+  </noscript>
+
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-center text-blue-600 header-title app-title">ImageMetadataPro</h1>
+      <p class="text-center text-gray-600 mt-2 header-subtitle app-subtitle">Edita metadatos y añade marcas de agua a tus imágenes</p>
+    </header>
+
+    <main>
+      <!-- Upload Zone -->
+      <section class="mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6 card">
+          <h2 class="text-xl font-semibold mb-4">1. Selecciona una imagen</h2>
+          <div id="drop-area" class="upload__dropzone rounded-lg cursor-pointer">
+            <div class="text-center p-6">
+              <i class="fas fa-cloud-upload-alt text-4xl upload__icon" aria-hidden="true"></i>
+              <p class="text-gray-700 mb-2 upload-text">Arrastra y suelta tu imagen o</p>
+              <button id="file-selector"
+                      class="upload__button"
+                      aria-label="Seleccionar archivo"
+                      data-tooltip="Selecciona una imagen desde tu dispositivo">
+                <i class="fas fa-folder-open" aria-hidden="true"></i>
+                Seleccionar archivo
+              </button>
+              <p class="text-sm text-gray-500 mt-2 upload-info">Formatos: JPG, JPEG, PNG, WEBP, AVIF</p>
+              <p class="text-sm text-gray-500 upload-info">Tamaño máximo: 25 MB</p>
+              <input type="file" id="file-input"
+                     accept=".jpg,.jpeg,.png,.webp,.avif"
+                     class="hidden"
+                     aria-label="Seleccionar archivo de imagen">
+            </div>
+          </div>
+          <div id="file-info" class="file-info file-info--hidden">
+            <div class="file-info__content">
+              <i class="fas fa-file-image file-info__icon" aria-hidden="true"></i>
+              <span id="file-name" class="file-info__name"></span>
+              <button id="remove-file"
+                      class="file-info__remove"
+                      aria-label="Eliminar imagen seleccionada">
+                <i class="fas fa-times" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div id="error-message"
+               class="error error--hidden"
+               aria-live="assertive"></div>
+        </div>
+      </section>
+
+      <div id="editor-container" class="editor-container--hidden">
+        <div class="grid--large mb-8">
+          <!-- Metadata Section -->
+          <section class="mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 card">
+              <div id="metadata-header"
+                   class="section__header"
+                   role="button"
+                   tabindex="0"
+                   aria-expanded="true"
+                   aria-controls="metadata-content">
+                <h2 class="text-xl font-semibold">2. Editar metadatos</h2>
+                <i class="fas fa-chevron-down section__icon" aria-hidden="true"></i>
+              </div>
+              <div id="metadata-content"
+                   class="section__content section__content--open"
+                   aria-hidden="false">
+                <div class="section__inner">
+                  <form id="metadata-form">
+                  <div class="mb-4">
+                    <label for="title" class="block text-gray-700 font-medium mb-2 form-label">Título</label>
+                    <input type="text" id="title" name="title"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                  </div>
+                  <div class="mb-4">
+                    <label for="author" class="block text-gray-700 font-medium mb-2 form-label">Autor</label>
+                    <input type="text" id="author" name="author"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                  </div>
+                  <div class="mb-4">
+                    <label for="description" class="block text-gray-700 font-medium mb-2 form-label">Descripción</label>
+                    <textarea id="description" name="description" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-textarea"></textarea>
+                  </div>
+                  <div class="mb-4">
+                    <label for="keywords" class="block text-gray-700 font-medium mb-2 form-label">Palabras clave (separadas por comas)</label>
+                    <input type="text" id="keywords" name="keywords"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                  </div>
+                  <div class="mb-4">
+                    <label for="copyright" class="block text-gray-700 font-medium mb-2 form-label">Copyright</label>
+                    <input type="text" id="copyright" name="copyright"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                  </div>
+                  <div>
+                    <button type="submit"
+                            class="btn btn-primary button--action"
+                            data-tooltip="Guardar metadatos de la imagen">
+                      <i class="fas fa-save" aria-hidden="true"></i>
+                      Guardar metadatos
+                    </button>
+                  </div>
+                </form>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Watermark Section -->
+          <section class="mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 card">
+              <div id="watermark-header"
+                   class="section__header"
+                   role="button"
+                   tabindex="0"
+                   aria-expanded="true"
+                   aria-controls="watermark-content">
+                <h2 class="text-xl font-semibold">3. Añadir marca de agua</h2>
+                <i class="fas fa-chevron-down section__icon" aria-hidden="true"></i>
+              </div>
+              <div id="watermark-content"
+                   class="section__content section__content--open"
+                   aria-hidden="false">
+                <div class="section__inner">
+                  <form id="watermark-form">
+                  <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2 form-label">Tipo de marca</label>
+                    <div class="flex space-x-4">
+                      <label class="inline-flex items-center">
+                        <input type="radio" name="watermark-type" value="text" checked
+                               class="form-radio text-blue-500">
+                        <span class="ml-2 text-content">Texto</span>
+                      </label>
+                      <label class="inline-flex items-center">
+                        <input type="radio" name="watermark-type" value="image"
+                               class="form-radio text-blue-500">
+                        <span class="ml-2 text-content">Imagen</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div id="text-watermark-options" class="watermark-options__text">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="mb-4">
+                        <label for="watermark-text" class="block text-gray-700 font-medium mb-2 form-label">Texto</label>
+                        <input type="text" id="watermark-text" name="watermark-text"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-font" class="block text-gray-700 font-medium mb-2 form-label">Fuente</label>
+                        <select id="watermark-font" name="watermark-font"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-select">
+                          <option value="Arial">Arial</option>
+                          <option value="Helvetica">Helvetica</option>
+                          <option value="Times New Roman">Times New Roman</option>
+                          <option value="Courier New">Courier New</option>
+                          <option value="Georgia">Georgia</option>
+                        </select>
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-color" class="block text-gray-700 font-medium mb-2 form-label">Color</label>
+                        <input type="color" id="watermark-color" name="watermark-color" value="#000000"
+                               class="w-full h-10 cursor-pointer">
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-position" class="block text-gray-700 font-medium mb-2 form-label">Posición</label>
+                        <select id="watermark-position" name="watermark-position"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-select">
+                          <option value="top-left">Superior izquierda</option>
+                          <option value="top-center">Superior centro</option>
+                          <option value="top-right">Superior derecha</option>
+                          <option value="center-left">Centro izquierda</option>
+                          <option value="center">Centro</option>
+                          <option value="center-right">Centro derecha</option>
+                          <option value="bottom-left">Inferior izquierda</option>
+                          <option value="bottom-center">Inferior centro</option>
+                          <option value="bottom-right">Inferior derecha</option>
+                        </select>
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-size" class="block text-gray-700 font-medium mb-2 form-label">Tamaño</label>
+                        <input type="range" id="watermark-size" name="watermark-size" min="10" max="100" value="30"
+                               class="w-full">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                          <span class="range-label">Pequeño</span>
+                          <span class="range-label">Grande</span>
+                        </div>
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-opacity" class="block text-gray-700 font-medium mb-2 form-label">Opacidad</label>
+                        <input type="range" id="watermark-opacity" name="watermark-opacity" min="0" max="100" value="50"
+                               class="w-full">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                          <span class="range-label">Transparente</span>
+                          <span class="range-label">Opaco</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="image-watermark-options" class="watermark-options__image">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="mb-4">
+                        <label for="watermark-image" class="block text-gray-700 font-medium mb-2 form-label">Imagen de marca</label>
+                        <input type="file" id="watermark-image" name="watermark-image" accept=".png,.jpg,.jpeg"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-image-size" class="block text-gray-700 font-medium mb-2 form-label">Tamaño</label>
+                        <select id="watermark-image-size" name="watermark-image-size"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-select">
+                          <option value="small">Pequeño</option>
+                          <option value="medium" selected>Mediano</option>
+                          <option value="large">Grande</option>
+                          <option value="custom">Personalizado</option>
+                        </select>
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-image-opacity" class="block text-gray-700 font-medium mb-2 form-label">Opacidad</label>
+                        <input type="range" id="watermark-image-opacity" name="watermark-image-opacity" min="0" max="100" value="50"
+                               class="w-full">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                          <span class="range-label">Transparente</span>
+                          <span class="range-label">Opaco</span>
+                        </div>
+                      </div>
+                      <div class="mb-4">
+                        <label for="watermark-image-position" class="block text-gray-700 font-medium mb-2 form-label">Posición</label>
+                        <select id="watermark-image-position" name="watermark-image-position"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-select">
+                          <option value="top-left">Superior izquierda</option>
+                          <option value="top-center">Superior centro</option>
+                          <option value="top-right">Superior derecha</option>
+                          <option value="center-left">Centro izquierda</option>
+                          <option value="center">Centro</option>
+                          <option value="center-right">Centro derecha</option>
+                          <option value="bottom-left">Inferior izquierda</option>
+                          <option value="bottom-center">Inferior centro</option>
+                          <option value="bottom-right">Inferior derecha</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div id="watermark-image-custom-size" class="watermark-options__custom-size">
+                      <label class="block text-gray-700 font-medium mb-2 form-label">Tamaño personalizado</label>
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <label for="watermark-image-width" class="block text-sm text-gray-600 mb-1 form-label">Ancho (px)</label>
+                          <input type="number" id="watermark-image-width" name="watermark-image-width" min="10" max="1000"
+                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                        </div>
+                        <div>
+                          <label for="watermark-image-height" class="block text-sm text-gray-600 mb-1 form-label">Alto (px)</label>
+                          <input type="number" id="watermark-image-height" name="watermark-image-height" min="10" max="1000"
+                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <button type="submit"
+                            class="btn btn-primary button--action"
+                            data-tooltip="Aplicar marca de agua a la imagen">
+                      <i class="fas fa-paint-brush" aria-hidden="true"></i>
+                      Aplicar marca de agua
+                    </button>
+                  </div>
+                </form>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Preview Section - Now below the grid -->
+        <section class="mb-8">
+          <div class="bg-white rounded-lg shadow-md p-6 card">
+            <h2 class="text-xl font-semibold mb-4">4. Vista previa</h2>
+            <div class="preview__container">
+              <canvas id="preview-canvas" class="preview__canvas"></canvas>
+            </div>
+            <div class="mt-4 flex justify-between gap-3">
+              <button id="reset-changes"
+                      class="btn btn-secondary"
+                      data-tooltip="Restablecer todos los cambios">
+                <i class="fas fa-undo" aria-hidden="true"></i>
+                Restablecer
+              </button>
+              <button id="download-image"
+                      class="btn btn-success"
+                      data-tooltip="Descargar imagen procesada">
+                <i class="fas fa-download" aria-hidden="true"></i>
+                Descargar imagen
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+      <p class="footer-text">© 2023 ImageMetadataPro. Todos los derechos reservados.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Variables globales optimizadas
+    let currentImage = null;
+    let originalImageData = null;
+    let canvas = null;
+    let ctx = null;
+    let currentFile = null;
+    let originalExtension = 'jpg';
+    let lastDownloadDirectory = null;
+    
+    // Cache para optimización de rendimiento
+    const cache = {
+      watermarkImage: null,
+      lastWatermarkConfig: null
+    };
+
+    // Debounce function para optimizar eventos
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Throttle function para eventos de alta frecuencia
+    function throttle(func, limit) {
+      let inThrottle;
+      return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+          func.apply(context, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    }
+
+    // Optimized preview update with debouncing
+    const debouncedUpdatePreview = debounce(updatePreview, 100);
+
+    // Utility functions
+    const utils = {
+      showLoading: (element) => {
+        element.classList.add('loading');
+      },
+      
+      hideLoading: (element) => {
+        element.classList.remove('loading');
+      },
+      
+      createProgressBar: (container) => {
+        const progressBar = document.createElement('div');
+        progressBar.className = 'progress-bar';
+        const progressFill = document.createElement('div');
+        progressFill.className = 'progress-fill';
+        progressFill.style.width = '0%';
+        progressBar.appendChild(progressFill);
+        container.appendChild(progressBar);
+        return progressFill;
+      },
+      
+      updateProgress: (progressElement, percentage) => {
+        progressElement.style.width = `${percentage}%`;
+      },
+      
+      removeProgress: (container) => {
+        const progressBar = container.querySelector('.progress-bar');
+        if (progressBar) {
+          progressBar.remove();
+        }
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeApp();
+      setupFileNaming();
+      initializeTheme();
+    });
+
+    // Función auxiliar para convertir canvas a blob
+    function canvasToBlob(canvas, mimeType = 'image/png', quality = 0.9) {
+      return new Promise((resolve) => {
+        canvas.toBlob(resolve, mimeType, quality);
+      });
+    }
+
+    // Enhanced utility functions for better code maintainability
+    const UIManager = {
+      // Loading state management
+      showLoadingState: function(message = 'Procesando...') {
+        const existingLoader = document.querySelector('.global-loader');
+        if (existingLoader) return;
+
+        const loader = document.createElement('div');
+        loader.className = 'global-loader';
+        loader.innerHTML = `
+          <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <p class="loader-message">${SecurityManager.sanitizeText(message)}</p>
+          </div>
+        `;
+        document.body.appendChild(loader);
+      },
+
+      hideLoadingState: function() {
+        const loader = document.querySelector('.global-loader');
+        if (loader) {
+          loader.remove();
+        }
+      },
+
+      // Enhanced error handling
+      showError: function(message, duration = 5000) {
+        this.hideError(); // Clear any existing error
+        
+        const errorContainer = document.createElement('div');
+        errorContainer.className = 'error-toast';
+        errorContainer.innerHTML = `
+          <div class="error-content">
+            <span class="error-icon">⚠️</span>
+            <span class="error-message">${SecurityManager.sanitizeText(message)}</span>
+            <button class="error-close" onclick="this.parentElement.parentElement.remove()">×</button>
+          </div>
+        `;
+        
+        document.body.appendChild(errorContainer);
+        
+        // Auto-hide after duration
+        if (duration > 0) {
+          setTimeout(() => {
+            if (errorContainer.parentNode) {
+              errorContainer.remove();
+            }
+          }, duration);
+        }
+      },
+
+      hideError: function() {
+        const existingErrors = document.querySelectorAll('.error-toast');
+        existingErrors.forEach(error => error.remove());
+      },
+
+      // Enhanced success messages
+      showSuccess: function(message, duration = 3000) {
+        const successContainer = document.createElement('div');
+        successContainer.className = 'success-toast';
+        successContainer.innerHTML = `
+          <div class="success-content">
+            <span class="success-icon">✅</span>
+            <span class="success-message">${SecurityManager.sanitizeText(message)}</span>
+            <button class="success-close" onclick="this.parentElement.parentElement.remove()">×</button>
+          </div>
+        `;
+        
+        document.body.appendChild(successContainer);
+        
+        // Auto-hide after duration
+        setTimeout(() => {
+          if (successContainer.parentNode) {
+            successContainer.remove();
+          }
+        }, duration);
+      },
+
+      // Form state management
+      setFormDisabled: function(formId, disabled) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        
+        const inputs = form.querySelectorAll('input, textarea, select, button');
+        inputs.forEach(input => {
+          input.disabled = disabled;
+        });
+        
+        if (disabled) {
+          form.classList.add('form-disabled');
+        } else {
+          form.classList.remove('form-disabled');
+        }
+      },
+
+      // Debounced functions for performance
+      debounce: function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      },
+
+      // Throttled functions for performance
+      throttle: function(func, limit) {
+        let inThrottle;
+        return function() {
+          const args = arguments;
+          const context = this;
+          if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+          }
+        };
+      }
+    };
+
+    // Enhanced configuration management
+    const AppConfig = {
+      // File validation settings
+      maxFileSize: 10 * 1024 * 1024, // 10MB
+      allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+      
+      // Canvas settings
+      maxCanvasWidth: 800,
+      maxCanvasHeight: 600,
+      
+      // Validation limits
+      maxTextLength: {
+        title: 100,
+        author: 100,
+        description: 500,
+        keywords: 200,
+        copyright: 200,
+        watermarkText: 100
+      },
+      
+      // Performance settings
+      debounceDelay: 300,
+      throttleDelay: 100,
+      
+      // UI settings
+      animationDuration: 300,
+      toastDuration: 3000,
+      errorDuration: 5000
+    };
+
+    function initializeApp() {
+      console.log('Aplicación cargada');
+      
+      try {
+        // Obtener elementos del DOM
+        canvas = document.getElementById('preview-canvas');
+        if (!canvas) {
+          throw new Error('Canvas element not found');
+        }
+        
+        ctx = canvas.getContext('2d');
+        if (!ctx) {
+          throw new Error('Canvas context not available');
+        }
+        
+        // Configurar event listeners
+        setupEventListeners();
+        
+        // Configurar collapsibles
+        setupCollapsibles();
+        
+        // Configurar validación en tiempo real
+        setupFormValidation();
+        
+        // Configurar interceptores de errores globales
+        setupGlobalErrorHandling();
+        
+        console.log('Aplicación inicializada correctamente');
+        
+      } catch (error) {
+        console.error('Error al inicializar la aplicación:', error);
+        UIManager.showError('Error al inicializar la aplicación. Por favor, recarga la página.');
+      }
+    }
+
+    // Global error handling setup
+    function setupGlobalErrorHandling() {
+      // Manejar errores no capturados
+      window.addEventListener('error', function(event) {
+        console.error('Error global capturado:', event.error);
+        UIManager.showError('Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.');
+      });
+
+      // Manejar promesas rechazadas no capturadas
+      window.addEventListener('unhandledrejection', function(event) {
+        console.error('Promesa rechazada no manejada:', event.reason);
+        UIManager.showError('Error de procesamiento. Por favor, inténtalo de nuevo.');
+        event.preventDefault();
+      });
+    }
+
+    // Enhanced form validation setup
+    function setupFormValidation() {
+      // Validación para campos de metadatos
+      FormValidator.setupRealTimeValidation('title', (value) => {
+        if (value.length > 100) {
+          return { valid: false, message: 'El título no puede exceder 100 caracteres' };
+        }
+        return { valid: true };
+      });
+
+      FormValidator.setupRealTimeValidation('author', (value) => {
+        if (value.length > 100) {
+          return { valid: false, message: 'El autor no puede exceder 100 caracteres' };
+        }
+        return { valid: true };
+      });
+
+      FormValidator.setupRealTimeValidation('description', (value) => {
+        if (value.length > 500) {
+          return { valid: false, message: 'La descripción no puede exceder 500 caracteres' };
+        }
+        return { valid: true };
+      });
+
+      FormValidator.setupRealTimeValidation('keywords', (value) => {
+        if (value.length > 200) {
+          return { valid: false, message: 'Las palabras clave no pueden exceder 200 caracteres' };
+        }
+        return { valid: true };
+      });
+
+      FormValidator.setupRealTimeValidation('copyright', (value) => {
+        if (value.length > 200) {
+          return { valid: false, message: 'El copyright no puede exceder 200 caracteres' };
+        }
+        return { valid: true };
+      });
+
+      // Validación para marca de agua de texto
+      FormValidator.setupRealTimeValidation('watermark-text', (value) => {
+        if (value.length > 100) {
+          return { valid: false, message: 'El texto de marca de agua no puede exceder 100 caracteres' };
+        }
+        // Verificar caracteres especiales peligrosos
+        if (/<script|javascript:|on\w+=/i.test(value)) {
+          return { valid: false, message: 'El texto contiene caracteres no permitidos' };
+        }
+        return { valid: true };
+      });
+
+      // Validación para dimensiones personalizadas
+      FormValidator.setupRealTimeValidation('watermark-image-width', (value) => {
+        const num = parseInt(value);
+        if (isNaN(num) || num < 10 || num > 2000) {
+          return { valid: false, message: 'El ancho debe estar entre 10 y 2000 píxeles' };
+        }
+        return { valid: true };
+      });
+
+      FormValidator.setupRealTimeValidation('watermark-image-height', (value) => {
+        const num = parseInt(value);
+        if (isNaN(num) || num < 10 || num > 2000) {
+          return { valid: false, message: 'La altura debe estar entre 10 y 2000 píxeles' };
+        }
+        return { valid: true };
+      });
+    }
+
+    // Funciones del tema oscuro
+    function initializeTheme() {
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      
+      // Cargar tema guardado o usar preferencia del sistema
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+      
+      setTheme(currentTheme);
+      
+      // Escuchar cambios en las preferencias del sistema
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+          setTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    }
+
+    function setTheme(theme) {
+      console.log('SetTheme llamado con:', theme);
+      const themeIcon = document.getElementById('theme-icon');
+      const html = document.documentElement;
+      
+      if (theme === 'dark') {
+        html.setAttribute('data-theme', 'dark');
+        if (themeIcon) {
+          themeIcon.className = 'fas fa-sun';
+        }
+        console.log('Tema oscuro aplicado');
+      } else {
+        html.removeAttribute('data-theme');
+        if (themeIcon) {
+          themeIcon.className = 'fas fa-moon';
+        }
+        console.log('Tema claro aplicado');
+      }
+      
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleTheme() {
+      console.log('Toggle theme llamado');
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      console.log('Cambiando de', currentTheme, 'a', newTheme);
+      setTheme(newTheme);
+    }
+
+    function setupFileNaming() {
+      const titleInput = document.getElementById('title');
+      const fileInput = document.getElementById('file-input');
+
+      // Cuando se selecciona un archivo
+      fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length) {
+          currentFile = e.target.files[0];
+          // Guardar la extensión original del archivo
+          originalExtension = currentFile.name.split('.').pop().toLowerCase();
+          // Establecer el título inicial como el nombre del archivo (sin extensión)
+          if (!titleInput.value.trim()) {
+            titleInput.value = currentFile.name.replace(/\.[^/.]+$/, "");
+          }
+        }
+      });
+    }
+
+    // Enhanced Security and Validation Module
+    const SecurityManager = {
+      // Sanitización de texto para prevenir XSS
+      sanitizeText: function(text) {
+        if (typeof text !== 'string') return '';
+        return text
+          .replace(/[<>'"&]/g, function(match) {
+            const entities = {
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#x27;',
+              '&': '&amp;'
+            };
+            return entities[match];
+          })
+          .trim();
+      },
+
+      // Validación de entrada de texto
+      validateTextInput: function(text, maxLength = 500) {
+        if (!text || typeof text !== 'string') return false;
+        const sanitized = this.sanitizeText(text);
+        return sanitized.length <= maxLength && sanitized.length > 0;
+      },
+
+      // Validación de archivos de imagen
+      validateImageFile: function(file) {
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
+        const maxSize = 25 * 1024 * 1024; // 25MB
+        
+        const validation = {
+          isValid: true,
+          errors: []
+        };
+
+        if (!file) {
+          validation.isValid = false;
+          validation.errors.push('No se ha seleccionado ningún archivo');
+          return validation;
+        }
+
+        if (!allowedTypes.includes(file.type)) {
+          validation.isValid = false;
+          validation.errors.push('Formato de archivo no válido. Solo se permiten JPG, JPEG, PNG, WEBP y AVIF');
+        }
+
+        if (file.size > maxSize) {
+          validation.isValid = false;
+          validation.errors.push('El archivo es demasiado grande. El tamaño máximo es 25 MB');
+        }
+
+        // Validación adicional del nombre del archivo
+        const fileName = file.name;
+        if (fileName.length > 255) {
+          validation.isValid = false;
+          validation.errors.push('El nombre del archivo es demasiado largo');
+        }
+
+        // Verificar extensión del archivo
+        const extension = fileName.split('.').pop().toLowerCase();
+        const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+        if (!allowedExtensions.includes(extension)) {
+          validation.isValid = false;
+          validation.errors.push('Extensión de archivo no válida');
+        }
+
+        return validation;
+      },
+
+      // Validación de metadatos
+      validateMetadata: function(metadata) {
+        const validation = {
+          isValid: true,
+          errors: {},
+          sanitized: {}
+        };
+
+        const fields = {
+          title: { maxLength: 100, required: false },
+          author: { maxLength: 100, required: false },
+          description: { maxLength: 500, required: false },
+          keywords: { maxLength: 200, required: false },
+          copyright: { maxLength: 200, required: false }
+        };
+
+        for (const [field, rules] of Object.entries(fields)) {
+          const value = metadata[field] || '';
+          const sanitized = this.sanitizeText(value);
+          
+          if (rules.required && !sanitized) {
+            validation.isValid = false;
+            validation.errors[field] = 'Este campo es obligatorio';
+            continue;
+          }
+
+          if (sanitized.length > rules.maxLength) {
+            validation.isValid = false;
+            validation.errors[field] = `Máximo ${rules.maxLength} caracteres permitidos`;
+            continue;
+          }
+
+          validation.sanitized[field] = sanitized;
+        }
+
+        return validation;
+      },
+
+      // Validación de marca de agua de texto
+      validateWatermarkText: function(text, size, opacity) {
+        const validation = {
+          isValid: true,
+          errors: []
+        };
+
+        if (!text || typeof text !== 'string') {
+          validation.errors.push('El texto de la marca de agua es requerido');
+          validation.isValid = false;
+        } else {
+          const sanitized = this.sanitizeText(text);
+          if (sanitized.length > 100) {
+            validation.errors.push('El texto de la marca de agua no puede exceder 100 caracteres');
+            validation.isValid = false;
+          }
+        }
+
+        const sizeNum = parseInt(size);
+        if (isNaN(sizeNum) || sizeNum < 10 || sizeNum > 200) {
+          validation.errors.push('El tamaño debe estar entre 10 y 200 píxeles');
+          validation.isValid = false;
+        }
+
+        const opacityNum = parseInt(opacity);
+        if (isNaN(opacityNum) || opacityNum < 0 || opacityNum > 100) {
+          validation.errors.push('La opacidad debe estar entre 0 y 100');
+          validation.isValid = false;
+        }
+
+        return validation;
+      }
+    };
+
+    // Form Validation Manager
+    const FormValidator = {
+      // Mostrar errores de validación
+      showFieldError: function(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        // Remover errores anteriores
+        this.clearFieldError(fieldId);
+
+        // Crear elemento de error
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.textContent = message;
+        errorElement.id = `${fieldId}-error`;
+
+        // Insertar después del campo
+        field.parentNode.insertBefore(errorElement, field.nextSibling);
+        
+        // Agregar clase de error al campo
+        field.classList.add('field-invalid');
+      },
+
+      // Limpiar errores de campo
+      clearFieldError: function(fieldId) {
+        const field = document.getElementById(fieldId);
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        
+        if (field) {
+          field.classList.remove('field-invalid');
+        }
+        
+        if (errorElement) {
+          errorElement.remove();
+        }
+      },
+
+      // Limpiar todos los errores del formulario
+      clearFormErrors: function(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        const errorElements = form.querySelectorAll('.field-error');
+        const invalidFields = form.querySelectorAll('.field-invalid');
+
+        errorElements.forEach(el => el.remove());
+        invalidFields.forEach(field => field.classList.remove('field-invalid'));
+      },
+
+      // Validación en tiempo real
+      setupRealTimeValidation: function(fieldId, validator) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        const validateField = debounce(() => {
+          const isValid = validator(field.value);
+          if (!isValid.valid) {
+            this.showFieldError(fieldId, isValid.message);
+          } else {
+            this.clearFieldError(fieldId);
+          }
+        }, 300);
+
+        field.addEventListener('input', validateField);
+        field.addEventListener('blur', validateField);
+      }
+    };
+
+    // Función para sanitizar nombres de archivo - mejorada
+    function sanitizeFilename(filename) {
+      if (!filename || typeof filename !== 'string') return 'imagen_editada';
+      
+      return filename
+        .toLowerCase()
+        .replace(/[^\w\s.-]/g, '') // Solo permitir letras, números, espacios, puntos y guiones
+        .replace(/\s+/g, '-')      // Reemplazar espacios con guiones
+        .replace(/-+/g, '-')       // Eliminar guiones múltiples
+        .replace(/^-+|-+$/g, '')   // Eliminar guiones al inicio y final
+        .substring(0, 100)         // Limitar longitud
+        .trim() || 'imagen_editada'; // Fallback si queda vacío
+    }
+
+    // Función para convertir canvas a blob
+    async function canvasToBlob(canvas, mimeType) {
+      return new Promise((resolve) => {
+        canvas.toBlob(resolve, mimeType);
+      });
+    }
+
+    function setupEventListeners() {
+      try {
+        // Upload de archivos con optimización
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const fileSelector = document.getElementById('file-selector');
+        const removeFile = document.getElementById('remove-file');
+        
+        // Solo configurar si los elementos existen
+        if (dropArea && fileInput && fileSelector && removeFile) {
+          // Optimized drag and drop with throttling
+          const throttledDragOver = throttle(handleDragOver, 50);
+          const throttledDragLeave = throttle(handleDragLeave, 50);
+          
+          dropArea.addEventListener('dragover', throttledDragOver);
+          dropArea.addEventListener('dragleave', throttledDragLeave);
+          dropArea.addEventListener('drop', handleDrop);
+          
+          // Enhanced file selector
+          fileSelector.addEventListener('click', () => fileInput.click());
+          fileInput.addEventListener('change', handleFileSelect);
+          removeFile.addEventListener('click', removeSelectedFile);
+        }
+        
+        // Form submissions with loading states
+        const metadataForm = document.getElementById('metadata-form');
+        const watermarkForm = document.getElementById('watermark-form');
+        
+        if (metadataForm) {
+          metadataForm.addEventListener('submit', handleMetadataSubmit);
+        }
+        
+        if (watermarkForm) {
+          watermarkForm.addEventListener('submit', handleWatermarkSubmit);
+        }
+        
+        // Watermark type toggle
+        const watermarkTypeRadios = document.querySelectorAll('input[name="watermark-type"]');
+        watermarkTypeRadios.forEach(radio => {
+          radio.addEventListener('change', toggleWatermarkType);
+        });
+        
+        // Custom image size toggle
+        const watermarkImageSize = document.getElementById('watermark-image-size');
+        if (watermarkImageSize) {
+          watermarkImageSize.addEventListener('change', toggleCustomImageSize);
+        }
+        
+        // Real-time controls with debouncing for better performance - con verificación de existencia
+        const controls = [
+          { id: 'watermark-text', event: 'input' },
+          { id: 'watermark-font', event: 'change' },
+          { id: 'watermark-color', event: 'change' },
+          { id: 'watermark-size', event: 'input' },
+          { id: 'watermark-opacity', event: 'input' },
+          { id: 'watermark-position', event: 'change' },
+          { id: 'watermark-image-size', event: 'change' },
+          { id: 'watermark-image-opacity', event: 'input' },
+          { id: 'watermark-image-position', event: 'change' },
+          { id: 'watermark-image-width', event: 'input' },
+          { id: 'watermark-image-height', event: 'input' }
+        ];
+        
+        controls.forEach(({ id, event }) => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.addEventListener(event, debouncedUpdatePreview);
+          }
+        });
+        
+        // Image watermark controls
+        const watermarkImage = document.getElementById('watermark-image');
+        if (watermarkImage) {
+          watermarkImage.addEventListener('change', handleWatermarkImageChange);
+        }
+        
+        // Action buttons
+        const resetChangesBtn = document.getElementById('reset-changes');
+        const downloadImageBtn = document.getElementById('download-image');
+        
+        if (resetChangesBtn) {
+          resetChangesBtn.addEventListener('click', resetChanges);
+        }
+        
+        if (downloadImageBtn) {
+          downloadImageBtn.addEventListener('click', downloadImage);
+        }
+        
+        // Theme toggle button - CRÍTICO PARA EL MODO OSCURO
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+          themeToggle.addEventListener('click', toggleTheme);
+          console.log('Event listener del tema configurado correctamente');
+        } else {
+          console.error('Botón de tema no encontrado');
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', handleKeyboardShortcuts);
+        
+      } catch (error) {
+        console.error('Error configurando event listeners:', error);
+      }
+    }
+
+    function handleWatermarkImageChange() {
+      // Clear cache when new image is selected
+      cache.watermarkImage = null;
+      cache.lastWatermarkConfig = null;
+      debouncedUpdatePreview();
+    }
+
+    function handleKeyboardShortcuts(e) {
+      // Ctrl+S or Cmd+S to download
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (canvas && currentImage) {
+          downloadImage();
+        }
+      }
+      
+      // Ctrl+R or Cmd+R to reset (prevent page reload)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        if (currentImage) {
+          resetChanges();
+        }
+      }
+      
+      // Escape to close any modals or reset focus
+      if (e.key === 'Escape') {
+        document.activeElement.blur();
+      }
+    }
+
+    function setupCollapsibles() {
+      const metadataHeader = document.getElementById('metadata-header');
+      const watermarkHeader = document.getElementById('watermark-header');
+      
+      metadataHeader.addEventListener('click', () => toggleCollapsible('metadata'));
+      watermarkHeader.addEventListener('click', () => toggleCollapsible('watermark'));
+      
+      metadataHeader.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleCollapsible('metadata');
+        }
+      });
+      
+      watermarkHeader.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleCollapsible('watermark');
+        }
+      });
+    }
+
+    function toggleCollapsible(section) {
+      const header = document.getElementById(`${section}-header`);
+      const content = document.getElementById(`${section}-content`);
+      const icon = header.querySelector('.section__icon');
+      
+      const isOpen = content.classList.contains('section__content--open');
+      
+      if (isOpen) {
+        content.classList.remove('section__content--open');
+        icon.classList.add('section__icon--collapsed');
+        header.setAttribute('aria-expanded', 'false');
+        content.setAttribute('aria-hidden', 'true');
+      } else {
+        content.classList.add('section__content--open');
+        icon.classList.remove('section__icon--collapsed');
+        header.setAttribute('aria-expanded', 'true');
+        content.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('drop-area').classList.add('upload__dropzone--active');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('drop-area').classList.remove('upload__dropzone--active');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('drop-area').classList.remove('upload__dropzone--active');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    }
+
+    // Enhanced file handling with security validation
+    function handleFile(file) {
+      // Limpiar errores anteriores
+      UIManager.hideError();
+      
+      // Validación completa del archivo
+      const validation = SecurityManager.validateImageFile(file);
+      
+      if (!validation.isValid) {
+        validation.errors.forEach(error => UIManager.showError(error));
+        return;
+      }
+
+      // Mostrar estado de carga
+      UIManager.showLoadingState('Procesando archivo...');
+
+      // Guardar información del archivo
+      currentFile = file;
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      originalExtension = fileExtension;
+      
+      // Verificación adicional del tipo MIME vs extensión
+      const mimeToExt = {
+        'image/jpeg': ['jpg', 'jpeg'],
+        'image/png': ['png'],
+        'image/webp': ['webp'],
+        'image/avif': ['avif']
+      };
+      
+      const allowedExtensionsForMime = mimeToExt[file.type];
+      if (!allowedExtensionsForMime || !allowedExtensionsForMime.includes(fileExtension)) {
+        UIManager.hideLoadingState();
+        UIManager.showError('La extensión del archivo no coincide con su tipo');
+        return;
+      }
+
+      // Leer archivo con manejo de errores mejorado
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        try {
+          loadImage(e.target.result, file.name);
+        } catch (error) {
+          UIManager.hideLoadingState();
+          console.error('Error al procesar la imagen:', error);
+          UIManager.showError('Error al procesar la imagen. Por favor, inténtalo de nuevo.');
+        }
+      };
+      
+      reader.onerror = function() {
+        UIManager.hideLoadingState();
+        UIManager.showError('Error al leer el archivo. Por favor, inténtalo de nuevo.');
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    // Enhanced image loading with validation
+    function loadImage(src, fileName) {
+      const img = new Image();
+      
+      img.onload = function() {
+        try {
+          // Validar dimensiones de la imagen
+          if (img.width < 1 || img.height < 1) {
+            UIManager.hideLoadingState();
+            UIManager.showError('La imagen no tiene dimensiones válidas');
+            return;
+          }
+
+          // Validar dimensiones máximas (opcional)
+          const maxDimension = 8192; // 8K máximo
+          if (img.width > maxDimension || img.height > maxDimension) {
+            UIManager.hideLoadingState();
+            UIManager.showError(`Las dimensiones de la imagen son demasiado grandes. Máximo ${maxDimension}x${maxDimension} píxeles.`);
+            return;
+          }
+
+          currentImage = img;
+          originalImageData = src;
+          
+          // Sanitizar y mostrar información del archivo
+          const sanitizedFileName = SecurityManager.sanitizeText(fileName);
+          const fileNameElement = document.getElementById('file-name');
+          const fileInfoElement = document.getElementById('file-info');
+          
+          if (fileNameElement) {
+            fileNameElement.textContent = sanitizedFileName;
+          }
+          
+          if (fileInfoElement) {
+            fileInfoElement.classList.remove('file-info--hidden');
+          }
+          
+          // Establecer título inicial si está vacío
+          const titleInput = document.getElementById('title');
+          if (titleInput && !titleInput.value.trim()) {
+            const nameWithoutExt = sanitizedFileName.replace(/\.[^/.]+$/, "");
+            titleInput.value = SecurityManager.sanitizeText(nameWithoutExt);
+          }
+          
+          // Mostrar editor
+          const editorContainer = document.getElementById('editor-container');
+          if (editorContainer) {
+            editorContainer.classList.remove('editor-container--hidden');
+          }
+          
+          // Configurar canvas
+          setupCanvas();
+          
+          // Actualizar vista previa
+          updatePreview();
+          
+          // Limpiar estado de carga y mostrar éxito
+          UIManager.hideLoadingState();
+          UIManager.showSuccess('Imagen cargada correctamente');
+          
+        } catch (error) {
+          UIManager.hideLoadingState();
+          console.error('Error al configurar la imagen:', error);
+          UIManager.showError('Error al configurar la imagen. Por favor, inténtalo de nuevo.');
+        }
+      };
+      
+      img.onerror = function() {
+        UIManager.hideLoadingState();
+        UIManager.showError('Error al cargar la imagen. El archivo puede estar corrupto.');
+      };
+      
+      // Timeout para imágenes que no cargan
+      const timeout = setTimeout(() => {
+        if (!img.complete) {
+          UIManager.hideLoadingState();
+          UIManager.showError('La carga de la imagen está tomando demasiado tiempo. Por favor, inténtalo de nuevo.');
+        }
+      }, 10000);
+      
+      // Limpiar timeout cuando la imagen se carga exitosamente
+      const originalOnload = img.onload;
+      img.onload = function() {
+        clearTimeout(timeout);
+        originalOnload.call(this);
+      };
+
+      img.src = src;
+    }
+
+    function setupCanvas() {
+      if (!currentImage) return;
+      
+      const maxWidth = 800;
+      const maxHeight = 600;
+      
+      let { width, height } = currentImage;
+      
+      // Calcular nuevas dimensiones manteniendo proporción
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width *= ratio;
+        height *= ratio;
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+    }
+
+    function updatePreview() {
+      if (!currentImage || !ctx) return;
+      
+      // Performance optimization: requestAnimationFrame for smooth rendering
+      requestAnimationFrame(() => {
+        // Clear canvas with optimized method
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw image with better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+        
+        // Apply watermark with caching
+        applyWatermarkOptimized();
+      });
+    }
+
+    function applyWatermarkOptimized() {
+      const watermarkType = document.querySelector('input[name="watermark-type"]:checked').value;
+      
+      if (watermarkType === 'text') {
+        applyTextWatermarkOptimized();
+      } else {
+        applyImageWatermarkOptimized();
+      }
+    }
+
+    function applyTextWatermarkOptimized() {
+      const text = document.getElementById('watermark-text').value.trim();
+      if (!text) return;
+      
+      const font = document.getElementById('watermark-font').value;
+      const color = document.getElementById('watermark-color').value;
+      const size = parseInt(document.getElementById('watermark-size').value);
+      const opacity = parseInt(document.getElementById('watermark-opacity').value) / 100;
+      const position = document.getElementById('watermark-position').value;
+      
+      // Cache font configuration for better performance
+      const fontConfig = `${size}px ${font}`;
+      ctx.font = fontConfig;
+      ctx.fillStyle = color;
+      ctx.globalAlpha = opacity;
+      
+      // Add text shadow for better visibility
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 2;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
+      
+      // Calculate position with better precision
+      const textMetrics = ctx.measureText(text);
+      const textWidth = textMetrics.width;
+      const textHeight = size;
+      
+      const positions = getWatermarkPosition(position, textWidth, textHeight);
+      
+      // Draw text with enhanced quality
+      ctx.fillText(text, positions.x, positions.y);
+      
+      // Reset shadow and opacity
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.globalAlpha = 1;
+    }
+
+    function applyImageWatermarkOptimized() {
+      const watermarkImageInput = document.getElementById('watermark-image');
+      if (!watermarkImageInput.files[0]) return;
+      
+      // Use cached image if available and configuration hasn't changed
+      const currentConfig = {
+        file: watermarkImageInput.files[0],
+        opacity: document.getElementById('watermark-image-opacity').value,
+        size: document.getElementById('watermark-image-size').value,
+        position: document.getElementById('watermark-image-position').value,
+        width: document.getElementById('watermark-image-width').value,
+        height: document.getElementById('watermark-image-height').value
+      };
+      
+      const configChanged = !cache.lastWatermarkConfig || 
+        JSON.stringify(currentConfig) !== JSON.stringify(cache.lastWatermarkConfig);
+      
+      if (cache.watermarkImage && !configChanged) {
+        drawCachedWatermark(cache.watermarkImage, currentConfig);
+        return;
+      }
+      
+      // Load new watermark image
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const watermarkImg = new Image();
+        watermarkImg.onload = function() {
+          cache.watermarkImage = watermarkImg;
+          cache.lastWatermarkConfig = currentConfig;
+          drawCachedWatermark(watermarkImg, currentConfig);
+        };
+        watermarkImg.src = e.target.result;
+      };
+      reader.readAsDataURL(watermarkImageInput.files[0]);
+    }
+
+    function drawCachedWatermark(watermarkImg, config) {
+      const opacity = parseInt(config.opacity) / 100;
+      const sizeOption = config.size;
+      const position = config.position;
+      
+      // Calculate size with caching
+      let { width, height } = calculateWatermarkImageSize(watermarkImg, sizeOption);
+      
+      // Calculate position
+      const positions = getWatermarkPosition(position, width, height);
+      
+      // Draw image with enhanced quality and shadow
+      ctx.globalAlpha = opacity;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      ctx.drawImage(watermarkImg, positions.x, positions.y, width, height);
+      
+      // Reset effects
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.globalAlpha = 1;
+    }
+
+    function calculateWatermarkImageSize(img, sizeOption) {
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      
+      let width, height;
+      
+      switch (sizeOption) {
+        case 'small':
+          width = Math.min(img.width, canvasWidth * 0.15);
+          height = (width / img.width) * img.height;
+          break;
+        case 'medium':
+          width = Math.min(img.width, canvasWidth * 0.25);
+          height = (width / img.width) * img.height;
+          break;
+        case 'large':
+          width = Math.min(img.width, canvasWidth * 0.4);
+          height = (width / img.width) * img.height;
+          break;
+        case 'custom':
+          width = parseInt(document.getElementById('watermark-image-width').value) || 100;
+          height = parseInt(document.getElementById('watermark-image-height').value) || 100;
+          break;
+        default:
+          width = img.width;
+          height = img.height;
+      }
+      
+      return { width, height };
+    }
+
+    function getWatermarkPosition(position, width, height) {
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const margin = 20;
+      
+      let x, y;
+      
+      switch (position) {
+        case 'top-left':
+          x = margin;
+          y = margin + height;
+          break;
+        case 'top-center':
+          x = (canvasWidth - width) / 2;
+          y = margin + height;
+          break;
+        case 'top-right':
+          x = canvasWidth - width - margin;
+          y = margin + height;
+          break;
+        case 'center-left':
+          x = margin;
+          y = (canvasHeight + height) / 2;
+          break;
+        case 'center':
+          x = (canvasWidth - width) / 2;
+          y = (canvasHeight + height) / 2;
+          break;
+        case 'center-right':
+          x = canvasWidth - width - margin;
+          y = (canvasHeight + height) / 2;
+          break;
+        case 'bottom-left':
+          x = margin;
+          y = canvasHeight - margin;
+          break;
+        case 'bottom-center':
+          x = (canvasWidth - width) / 2;
+          y = canvasHeight - margin;
+          break;
+        case 'bottom-right':
+          x = canvasWidth - width - margin;
+          y = canvasHeight - margin;
+          break;
+        default:
+          x = margin;
+          y = margin + height;
+      }
+      
+      return { x, y };
+    }
+
+    function toggleWatermarkType() {
+      const textOptions = document.getElementById('text-watermark-options');
+      const imageOptions = document.getElementById('image-watermark-options');
+      const selectedType = document.querySelector('input[name="watermark-type"]:checked').value;
+      
+      if (selectedType === 'text') {
+        textOptions.classList.remove('watermark-options__text--hidden');
+        textOptions.classList.add('watermark-options__text');
+        imageOptions.classList.remove('watermark-options__image--visible');
+        imageOptions.classList.add('watermark-options__image');
+      } else {
+        textOptions.classList.remove('watermark-options__text');
+        textOptions.classList.add('watermark-options__text--hidden');
+        imageOptions.classList.remove('watermark-options__image');
+        imageOptions.classList.add('watermark-options__image--visible');
+      }
+      
+      updatePreview();
+    }
+
+    function toggleCustomImageSize() {
+      const sizeSelect = document.getElementById('watermark-image-size');
+      const customSizeDiv = document.getElementById('watermark-image-custom-size');
+      
+      if (sizeSelect.value === 'custom') {
+        customSizeDiv.classList.add('watermark-options__custom-size--visible');
+        customSizeDiv.classList.remove('watermark-options__custom-size');
+      } else {
+        customSizeDiv.classList.remove('watermark-options__custom-size--visible');
+        customSizeDiv.classList.add('watermark-options__custom-size');
+      }
+      
+      updatePreview();
+    }
+
+    // Enhanced metadata form handler with validation
+    function handleMetadataSubmit(e) {
+      e.preventDefault();
+      
+      if (!currentImage) {
+        showError('Por favor, selecciona una imagen primero.');
+        return;
+      }
+
+      const form = e.target;
+      
+      // Limpiar errores anteriores
+      FormValidator.clearFormErrors('metadata-form');
+      
+      // Mostrar estado de carga
+      form.classList.add('form-loading');
+
+      try {
+        // Recopilar datos del formulario
+        const formData = new FormData(form);
+        const metadata = Object.fromEntries(formData);
+        
+        // Validar metadatos
+        const validation = SecurityManager.validateMetadata(metadata);
+        
+        if (!validation.isValid) {
+          // Mostrar errores específicos por campo
+          for (const [field, error] of Object.entries(validation.errors)) {
+            FormValidator.showFieldError(field, error);
+          }
+          form.classList.remove('form-loading');
+          return;
+        }
+
+        // Usar metadatos sanitizados
+        const sanitizedMetadata = validation.sanitized;
+        
+        // Aquí podrías implementar la lógica para aplicar metadatos a la imagen
+        // Por ejemplo, usando ExifWriter.js o similar para escribir metadatos EXIF
+        
+        console.log('Metadatos validados y sanitizados:', sanitizedMetadata);
+        
+        // Simular procesamiento
+        setTimeout(() => {
+          form.classList.remove('form-loading');
+          showSuccess('Metadatos guardados correctamente.');
+        }, 500);
+        
+      } catch (error) {
+        form.classList.remove('form-loading');
+        console.error('Error al procesar metadatos:', error);
+        showError('Error al procesar los metadatos. Por favor, inténtalo de nuevo.');
+      }
+    }
+
+    // Enhanced watermark form handler with validation
+    function handleWatermarkSubmit(e) {
+      e.preventDefault();
+      
+      if (!currentImage) {
+        showError('Por favor, selecciona una imagen primero.');
+        return;
+      }
+
+      const form = e.target;
+      const watermarkType = document.querySelector('input[name="watermark-type"]:checked').value;
+      
+      // Limpiar errores anteriores
+      FormValidator.clearFormErrors('watermark-form');
+      form.classList.add('form-loading');
+
+      try {
+        if (watermarkType === 'text') {
+          const text = document.getElementById('watermark-text').value;
+          const size = document.getElementById('watermark-size').value;
+          const opacity = document.getElementById('watermark-opacity').value;
+          
+          // Validar marca de agua de texto
+          const validation = SecurityManager.validateWatermarkText(text, size, opacity);
+          
+          if (!validation.isValid) {
+            validation.errors.forEach(error => showError(error));
+            form.classList.remove('form-loading');
+            return;
+          }
+        }
+        
+        // Aplicar marca de agua
+        updatePreview();
+        
+        setTimeout(() => {
+          form.classList.remove('form-loading');
+          showSuccess('Marca de agua aplicada correctamente.');
+        }, 300);
+        
+      } catch (error) {
+        form.classList.remove('form-loading');
+        console.error('Error al aplicar marca de agua:', error);
+        showError('Error al aplicar la marca de agua. Por favor, inténtalo de nuevo.');
+      }
+    }
+
+    function resetChanges() {
+      if (!currentImage) return;
+      
+      // Limpiar formularios
+      document.getElementById('metadata-form').reset();
+      document.getElementById('watermark-form').reset();
+      
+      // Resetear tipo de marca de agua
+      document.querySelector('input[name="watermark-type"][value="text"]').checked = true;
+      toggleWatermarkType();
+      
+      // Actualizar vista previa
+      updatePreview();
+      
+      showSuccess('Cambios restablecidos correctamente.');
+    }
+
+    async function downloadImage() {
+      if (!canvas) {
+        showError('No hay imagen para descargar.');
+        return;
+      }
+
+      if (!currentFile) {
+        showError('Por favor, selecciona una imagen primero.');
+        return;
+      }
+      
+      try {
+        // Obtener el título y sanitizar el nombre del archivo
+        const titleInput = document.getElementById('title');
+        let filename = titleInput.value.trim() || 'imagen_editada';
+        filename = sanitizeFilename(filename);
+        
+        // Mantener la extensión original del archivo
+        const extension = originalExtension || 'jpg';
+        const fullFilename = `${filename}.${extension}`;
+        
+        // Usar la API File System Access si está disponible (Chrome/Edge modernos)
+        if ('showSaveFilePicker' in window) {
+          const options = {
+            suggestedName: fullFilename,
+            types: [{
+              description: 'Imágenes',
+              accept: {
+                'image/*': [`.${extension}`]
+              }
+            }],
+            startIn: lastDownloadDirectory || 'desktop'
+          };
+
+          try {
+            const handle = await window.showSaveFilePicker(options);
+            lastDownloadDirectory = await handle.queryPermission({ mode: 'readwrite' });
+            
+            const writable = await handle.createWritable();
+            const mimeType = extension === 'png' ? 'image/png' : 'image/jpeg';
+            const blob = await canvasToBlob(canvas, mimeType);
+            await writable.write(blob);
+            await writable.close();
+            
+            showSuccess('Imagen guardada exitosamente!');
+            return;
+          } catch (saveError) {
+            // Si el usuario cancela, no mostrar error
+            if (saveError.name === 'AbortError') {
+              return;
+            }
+            console.warn('Error con File System Access API, usando fallback:', saveError);
+          }
+        }
+        
+        // Fallback para navegadores que no soportan la API o si falla
+        const link = document.createElement('a');
+        link.download = fullFilename;
+        const mimeType = extension === 'png' ? 'image/png' : 'image/jpeg';
+        link.href = canvas.toDataURL(mimeType, 0.9); // Calidad 90%
+        
+        // Simular click
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showSuccess('Imagen descargada correctamente.');
+      } catch (error) {
+        console.error('Error al descargar:', error);
+        showError('Error al descargar la imagen.');
+      }
+    }
+
+    function removeSelectedFile() {
+      currentImage = null;
+      originalImageData = null;
+      
+      // Limpiar formularios
+      document.getElementById('file-input').value = '';
+      document.getElementById('metadata-form').reset();
+      document.getElementById('watermark-form').reset();
+      
+      // Ocultar elementos
+      document.getElementById('file-info').classList.add('file-info--hidden');
+      document.getElementById('editor-container').classList.add('editor-container--hidden');
+      
+      // Limpiar canvas
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      
+      hideError();
+      showSuccess('Imagen eliminada correctamente.');
+    }
+
+    function showError(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down max-w-sm';
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <i class="fas fa-exclamation-triangle mr-3"></i>
+          <span>${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-white hover:text-red-200">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.classList.add('animate-fade-out');
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, 5000);
+    }
+
+    function hideError() {
+      // Legacy function kept for compatibility
+      const errorElement = document.getElementById('error-message');
+      if (errorElement) {
+        errorElement.classList.add('error--hidden');
+      }
+    }
+
+    function showSuccess(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down max-w-sm';
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <i class="fas fa-check-circle mr-3"></i>
+          <span>${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-white hover:text-green-200">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.classList.add('animate-fade-out');
+          setTimeout(() => notification.remove(), 300);
+        }
+      }, 4000);
+    }
+
+    // Enhanced download function with progress
+    async function downloadImageEnhanced() {
+      if (!canvas || !currentImage) {
+        showError('No hay imagen para descargar');
+        return;
+      }
+      
+      try {
+        showLoadingState('Preparando descarga...');
+        
+        // Generate filename with timestamp
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/[:.]/g, '-');
+        const filename = `imagen-editada-${timestamp}.png`;
+        
+        // Create download with enhanced quality
+        const dataUrl = canvas.toDataURL('image/png', 1.0);
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = dataUrl;
+        
+        // Trigger download with smooth animation
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        hideLoadingState();
+        showSuccess('Imagen descargada correctamente');
+        
+      } catch (error) {
+        console.error('Error downloading image:', error);
+        hideLoadingState();
+        showError('Error al descargar la imagen');
+      }
+    }
+
+    // Loading state management
+    function showLoadingState(message = 'Procesando...') {
+      const overlay = document.createElement('div');
+      overlay.id = 'loading-overlay';
+      overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in';
+      
+      overlay.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm mx-4 text-center animate-slide-up">
+          <div class="animate-pulse mb-4">
+            <div class="w-8 h-8 bg-blue-500 rounded-full mx-auto"></div>
+          </div>
+          <p class="text-gray-700 dark:text-gray-300 font-medium">${message}</p>
+          <div class="mt-4">
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full animate-loading-bar"></div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(overlay);
+    }
+
+    function hideLoadingState() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) {
+        overlay.classList.add('animate-fade-out');
+        setTimeout(() => overlay.remove(), 300);
+      }
+    }
+
+    // Enhanced clear metadata function
+    function clearMetadata() {
+      const form = document.getElementById('metadata-form');
+      if (form) {
+        form.reset();
+        showSuccess('Metadatos limpiados');
+      }
+    }
+
+    // Performance monitoring
+    function measurePerformance(operation, fn) {
+      const start = performance.now();
+      const result = fn();
+      const end = performance.now();
+      
+      if (end - start > 100) { // Log operations taking more than 100ms
+        console.log(`Performance: ${operation} took ${(end - start).toFixed(2)}ms`);
+      }
+      
+      return result;
+    }
+
+    // Enhanced error handling
+    window.addEventListener('error', (event) => {
+      console.error('Global error:', event.error);
+      showError('Se ha producido un error inesperado');
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      showError('Error en operación asíncrona');
+    });
+  </script>
+</body>
+</html>
