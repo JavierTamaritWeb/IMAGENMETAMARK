@@ -268,7 +268,7 @@
       left: 100%;
     }
 
-    /* Enhanced tooltips with dark mode support */
+    /* Enhanced tooltips with dark mode support - DISABLED
     [data-tooltip] {
       position: relative;
     }
@@ -318,8 +318,9 @@
       visibility: visible;
       transform: translateX(-50%) translateY(-5px);
     }
+    */
 
-    /* Dark mode specific tooltips */
+    /* Dark mode specific tooltips - DISABLED
     [data-theme="dark"] [data-tooltip]::after {
       background: var(--bg-tooltip);
       color: var(--text-primary);
@@ -330,6 +331,7 @@
     [data-theme="dark"] [data-tooltip]::before {
       border-top-color: var(--bg-tooltip);
     }
+    */
 
     /* Enhanced focus states */
     .form-input:focus,
@@ -341,7 +343,7 @@
       transform: translateY(-1px);
     }
 
-    /* Dark mode specific enhancements */
+    /* Dark mode specific enhancements - DISABLED
     .dark [data-tooltip]::after {
       --bg-tooltip: rgba(55, 65, 81, 0.95);
     }
@@ -350,6 +352,7 @@
       --bg-tooltip: rgba(55, 65, 81, 0.95);
       border-top-color: rgba(55, 65, 81, 0.95);
     }
+    */
 
     /* Performance optimizations */
     .card {
@@ -367,11 +370,11 @@
         min-height: 44px; /* Touch-friendly size */
       }
       
-      [data-tooltip]::after {
+      /* [data-tooltip]::after {
         font-size: 0.8rem;
         max-width: 200px;
         white-space: normal;
-      }
+      } */
     }
 
     /* Accessibility improvements */
@@ -488,33 +491,29 @@
       border-radius: var(--radius);
       font-weight: 500;
       cursor: pointer;
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .upload__button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s ease;
+      transition: background 0.2s ease;
     }
 
     .upload__button:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .upload__button:hover::before {
-      left: 100%;
+      background: linear-gradient(135deg, #1d4ed8, #0e7490);
     }
 
     .upload__button:active {
-      transform: translateY(0);
+      background: linear-gradient(135deg, #1e40af, #0c7489);
+    }
+
+    .upload__button:focus-visible {
+      outline: 2px solid var(--accent-secondary);
+      outline-offset: 2px;
+    }
+
+    /* Dark mode upload button styles */
+    [data-theme="dark"] .upload__button:hover {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
+
+    [data-theme="dark"] .upload__button:active {
+      background: linear-gradient(135deg, #2563eb, #0891b2);
     }
     
     /* File Info Block - Enhanced */
@@ -1671,8 +1670,7 @@
               <p class="text-gray-700 mb-2 upload-text">Arrastra y suelta tu imagen o</p>
               <button id="file-selector"
                       class="upload__button"
-                      aria-label="Seleccionar archivo"
-                      data-tooltip="Selecciona una imagen desde tu dispositivo">
+                      aria-label="Seleccionar archivo">
                 <i class="fas fa-folder-open" aria-hidden="true"></i>
                 Seleccionar archivo
               </button>
@@ -2630,12 +2628,9 @@
         
         // Solo configurar si los elementos existen
         if (dropArea && fileInput && fileSelector && removeFile) {
-          // Optimized drag and drop with throttling
-          const throttledDragOver = throttle(handleDragOver, 50);
-          const throttledDragLeave = throttle(handleDragLeave, 50);
-          
-          dropArea.addEventListener('dragover', throttledDragOver);
-          dropArea.addEventListener('dragleave', throttledDragLeave);
+          // Simplified drag and drop without throttling for testing
+          dropArea.addEventListener('dragover', handleDragOver);
+          dropArea.addEventListener('dragleave', handleDragLeave);
           dropArea.addEventListener('drop', handleDrop);
           
           // Enhanced file selector
@@ -2937,9 +2932,8 @@
           // Actualizar vista previa
           updatePreview();
           
-          // Limpiar estado de carga y mostrar éxito
+          // Limpiar estado de carga
           UIManager.hideLoadingState();
-          UIManager.showSuccess('Imagen cargada correctamente');
           
         } catch (error) {
           UIManager.hideLoadingState();
@@ -3357,8 +3351,6 @@
       
       // Actualizar vista previa
       updatePreview();
-      
-      showSuccess('Cambios restablecidos correctamente.');
     }
 
     async function downloadImage() {
@@ -3427,7 +3419,6 @@
         link.click();
         document.body.removeChild(link);
         
-        showSuccess('Imagen descargada correctamente.');
       } catch (error) {
         console.error('Error al descargar:', error);
         showError('Error al descargar la imagen.');
@@ -3453,7 +3444,6 @@
       }
       
       hideError();
-      showSuccess('Imagen eliminada correctamente.');
     }
 
     function showError(message) {
@@ -3534,7 +3524,6 @@
         document.body.removeChild(link);
         
         hideLoadingState();
-        showSuccess('Imagen descargada correctamente');
         
       } catch (error) {
         console.error('Error downloading image:', error);
