@@ -1434,10 +1434,17 @@
         gap: 1.5rem;
         align-items: stretch;
       }
-      .grid--large > section > div {
-        min-height: 600px;
+      .grid--large > section {
         display: flex;
         flex-direction: column;
+        height: 100%;
+      }
+      .grid--large > section > div {
+        min-height: 650px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        height: 100%;
       }
       .grid--large .section__content {
         flex: 1;
@@ -1449,19 +1456,83 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        flex: 1;
       }
       .grid--large .section__content form > div:last-child {
         margin-top: auto;
-        padding-top: 1rem;
+        padding-top: 1.5rem;
+        display: flex;
+        justify-content: center;
       }
       
-      /* Button Block */
+      /* Button styling for consistent appearance - same as upload button */
       .button--action {
-        width: 180px;
-        height: 44px;
-        font-size: 0.875rem;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius);
         font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        width: 200px;
+        height: 48px;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
       }
+      
+      .button--action:hover {
+        background: linear-gradient(135deg, #1d4ed8, #0e7490);
+      }
+
+      .button--action:active {
+        background: linear-gradient(135deg, #1e40af, #0c7489);
+      }
+
+      .button--action:focus-visible {
+        outline: 2px solid var(--accent-secondary);
+        outline-offset: 2px;
+      }
+
+      /* Dark mode action button styles */
+      [data-theme="dark"] .button--action:hover {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      }
+
+      [data-theme="dark"] .button--action:active {
+        background: linear-gradient(135deg, #2563eb, #0891b2);
+      }
+    }
+
+    /* Uniform button heights for all buttons */
+    .btn,
+    .upload__button,
+    .button--action,
+    button {
+      height: 48px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1;
+      box-sizing: border-box;
+    }
+
+    /* Specific styling for upload button to maintain its design */
+    .upload__button {
+      padding: 0 1.5rem;
+    }
+
+    /* Specific styling for action buttons in forms */
+    .button--action {
+      width: 200px;
+      padding: 0 1.25rem;
     }
 
     /* Enhanced global UI components for better maintainability */
@@ -1638,6 +1709,12 @@
         padding: 1.5rem;
       }
     }
+    @media (min-width: 768px) {
+      .boton-marca{
+        padding-top: 140px !important;
+        }
+    }
+    
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -1745,8 +1822,7 @@
                   </div>
                   <div>
                     <button type="submit"
-                            class="btn btn-primary button--action"
-                            data-tooltip="Guardar metadatos de la imagen">
+                            class="btn btn-primary button--action">
                       <i class="fas fa-save" aria-hidden="true"></i>
                       Guardar metadatos
                     </button>
@@ -1908,10 +1984,9 @@
                     </div>
                   </div>
 
-                  <div>
+                  <div class="boton-marca">
                     <button type="submit"
-                            class="btn btn-primary button--action"
-                            data-tooltip="Aplicar marca de agua a la imagen">
+                            class="btn btn-primary button--action">
                       <i class="fas fa-paint-brush" aria-hidden="true"></i>
                       Aplicar marca de agua
                     </button>
