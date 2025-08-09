@@ -1056,6 +1056,264 @@
       background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
       border-radius: var(--radius);
     }
+
+    /* Quality Progress Bar Styles */
+    .quality-progress {
+      margin-top: 1rem;
+    }
+
+    .quality-progress .w-full {
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    #quality-bar {
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #quality-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
+    }
+
+    #quality-percentage {
+      font-size: 1rem;
+      transition: color 0.3s ease;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Custom Range Slider Styles */
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #ef4444 0%, #f59e0b 30%, #22c55e 70%, #16a34a 100%);
+      outline: none;
+      opacity: 0.8;
+      transition: opacity 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .slider:hover {
+      opacity: 1;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #3b82f6;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      border-color: #1d4ed8;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .slider::-webkit-slider-thumb:active {
+      transform: scale(1.2);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #3b82f6;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.1);
+      border-color: #1d4ed8;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .slider::-moz-range-track {
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #ef4444 0%, #f59e0b 30%, #22c55e 70%, #16a34a 100%);
+      border: none;
+    }
+
+    /* Quality number input styles */
+    #quality-number {
+      border: 2px solid #d1d5db;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+
+    #quality-number:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      transform: scale(1.02);
+    }
+
+    #quality-number:hover {
+      border-color: #9ca3af;
+    }
+
+    /* Quality indicators */
+    .quality-progress .flex.justify-between:last-child span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .quality-progress .flex.justify-between:last-child span:hover {
+      color: var(--text-primary);
+    }
+
+    /* Format Info Styles */
+    #format-info {
+      transition: all 0.3s ease;
+      border-left: 4px solid;
+    }
+
+    #format-info.format-jpeg {
+      border-left-color: #f59e0b;
+      background-color: rgba(245, 158, 11, 0.1);
+    }
+
+    #format-info.format-png {
+      border-left-color: #10b981;
+      background-color: rgba(16, 185, 129, 0.1);
+    }
+
+    #format-info.format-webp {
+      border-left-color: #8b5cf6;
+      background-color: rgba(139, 92, 246, 0.1);
+    }
+
+    #format-info.format-avif {
+      border-left-color: #ef4444;
+      background-color: rgba(239, 68, 68, 0.1);
+    }
+
+    /* Dark mode support for output controls */
+    [data-theme="dark"] .quality-progress span {
+      color: var(--text-secondary);
+    }
+
+    [data-theme="dark"] #quality-percentage {
+      color: var(--accent-primary);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] .slider {
+      background: linear-gradient(90deg, #f87171 0%, #fbbf24 30%, #34d399 70%, #22c55e 100%);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] .slider:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .slider::-webkit-slider-thumb {
+      background: var(--bg-secondary);
+      border-color: var(--accent-primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .slider::-webkit-slider-thumb:hover {
+      border-color: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(96, 165, 250, 0.5);
+    }
+
+    [data-theme="dark"] .slider::-moz-range-thumb {
+      background: var(--bg-secondary);
+      border-color: var(--accent-primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] #quality-number {
+      background-color: var(--bg-tertiary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+      box-shadow: var(--shadow);
+    }
+
+    [data-theme="dark"] #quality-number:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+      background-color: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] #quality-number:hover {
+      border-color: var(--border-hover);
+      background-color: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] .quality-progress .w-full {
+      background-color: var(--bg-tertiary);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] #quality-bar {
+      background: linear-gradient(90deg, #f87171 0%, #fbbf24 30%, #34d399 70%, #22c55e 100%) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] #format-info {
+      background-color: var(--bg-tertiary);
+      border-color: var(--border-color);
+    }
+
+    [data-theme="dark"] #format-info.format-jpeg {
+      background-color: rgba(245, 158, 11, 0.15);
+      border-left-color: #fbbf24;
+    }
+
+    [data-theme="dark"] #format-info.format-png {
+      background-color: rgba(16, 185, 129, 0.15);
+      border-left-color: #34d399;
+    }
+
+    [data-theme="dark"] #format-info.format-webp {
+      background-color: rgba(139, 92, 246, 0.15);
+      border-left-color: #a78bfa;
+    }
+
+    [data-theme="dark"] #format-info.format-avif {
+      background-color: rgba(239, 68, 68, 0.15);
+      border-left-color: #f87171;
+    }
+
+    [data-theme="dark"] #format-description,
+    [data-theme="dark"] #format-compatibility {
+      color: var(--text-secondary);
+    }
     
     /* Section Block - Enhanced collapsible sections */
     .section__header {
@@ -2176,10 +2434,122 @@
           </section>
         </div>
 
+        <!-- Output Settings Section -->
+        <section class="mb-8">
+          <div class="bg-white rounded-lg shadow-md p-6 card">
+            <div id="output-header"
+                 class="section__header"
+                 role="button"
+                 tabindex="0"
+                 aria-expanded="true"
+                 aria-controls="output-content">
+              <h2 class="text-xl font-semibold">4. Configuración de salida</h2>
+              <i class="fas fa-chevron-down section__icon" aria-hidden="true"></i>
+            </div>
+            <div id="output-content"
+                 class="section__content section__content--open"
+                 aria-hidden="false">
+              <div class="section__inner">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Quality Control -->
+                  <div class="space-y-4">
+                    <div>
+                      <label for="output-quality" class="block text-gray-700 font-medium mb-2 form-label">
+                        Calidad de imagen
+                      </label>
+                      <div class="flex gap-3 items-center">
+                        <input type="range" 
+                               id="output-quality" 
+                               name="output-quality"
+                               min="1" 
+                               max="100" 
+                               value="80"
+                               step="1"
+                               class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                        <div class="flex items-center gap-2">
+                          <input type="number" 
+                                 id="quality-number" 
+                                 name="quality-number"
+                                 min="1" 
+                                 max="100" 
+                                 value="80"
+                                 class="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-center">
+                          <span class="text-sm font-medium text-gray-600">%</span>
+                        </div>
+                      </div>
+                      <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Baja (1%)</span>
+                        <span>Media (50%)</span>
+                        <span>Alta (100%)</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Quality Progress Bar -->
+                    <div class="quality-progress">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">Calidad seleccionada:</span>
+                        <span id="quality-percentage" class="text-sm font-bold text-blue-600">80%</span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden border border-gray-300">
+                        <div id="quality-bar" 
+                             class="h-full transition-all duration-500 rounded-full relative overflow-hidden"
+                             style="width: 80%; background: linear-gradient(90deg, #ef4444 0%, #f59e0b 30%, #22c55e 70%, #16a34a 100%);">
+                          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                        </div>
+                      </div>
+                      <div class="flex justify-between text-xs text-gray-500 mt-2">
+                        <span class="flex flex-col items-center">
+                          <span class="w-2 h-2 bg-red-500 rounded-full mb-1"></span>
+                          <span>Baja</span>
+                        </span>
+                        <span class="flex flex-col items-center">
+                          <span class="w-2 h-2 bg-yellow-500 rounded-full mb-1"></span>
+                          <span>Media</span>
+                        </span>
+                        <span class="flex flex-col items-center">
+                          <span class="w-2 h-2 bg-green-500 rounded-full mb-1"></span>
+                          <span>Alta</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Format Selection -->
+                  <div class="space-y-4">
+                    <div>
+                      <label for="output-format" class="block text-gray-700 font-medium mb-2 form-label">
+                        Formato de salida
+                      </label>
+                      <select id="output-format" name="output-format"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                        <option value="jpeg">JPEG (.jpg)</option>
+                        <option value="png">PNG (.png)</option>
+                        <option value="webp">WebP (.webp)</option>
+                        <option value="avif">AVIF (.avif)</option>
+                      </select>
+                    </div>
+                    
+                    <!-- Format Info -->
+                    <div id="format-info" class="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                      <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-2" aria-hidden="true"></i>
+                        <div class="text-sm text-blue-700">
+                          <p id="format-description">JPEG: Ideal para fotografías, menor tamaño de archivo.</p>
+                          <p id="format-compatibility" class="mt-1 text-blue-600 font-medium">Compatible con todos los navegadores</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Preview Section - Now below the grid -->
         <section class="mb-8">
           <div class="bg-white rounded-lg shadow-md p-6 card">
-            <h2 class="text-xl font-semibold mb-4">4. Vista previa</h2>
+            <h2 class="text-xl font-semibold mb-4">5. Vista previa</h2>
             <div class="preview__container">
               <canvas id="preview-canvas" class="preview__canvas"></canvas>
             </div>
@@ -2216,6 +2586,10 @@
     let currentFile = null;
     let originalExtension = 'jpg';
     let lastDownloadDirectory = null;
+    
+    // Variables para configuración de salida
+    let outputQuality = 0.8; // Valor por defecto (80%)
+    let outputFormat = 'jpeg'; // Formato por defecto
     
     // Variables para posicionamiento interactivo de imagen
     let customImagePosition = null;
@@ -2296,13 +2670,6 @@
       setupFileNaming();
       initializeTheme();
     });
-
-    // Función auxiliar para convertir canvas a blob
-    function canvasToBlob(canvas, mimeType = 'image/png', quality = 0.9) {
-      return new Promise((resolve) => {
-        canvas.toBlob(resolve, mimeType, quality);
-      });
-    }
 
     // Enhanced utility functions for better code maintainability
     const UIManager = {
@@ -2489,6 +2856,8 @@
           toggleWatermarkType();
           // Inicializar modo de posicionamiento
           togglePositioningMode();
+          // Inicializar controles de salida
+          initializeOutputControls();
         }, 100);
         
         console.log('Aplicación inicializada correctamente');
@@ -2581,6 +2950,77 @@
         }
         return { valid: true };
       });
+
+      // Validación para calidad de imagen
+      FormValidator.setupRealTimeValidation('quality-number', (value) => {
+        const num = parseInt(value);
+        if (isNaN(num) || num < 1 || num > 100) {
+          return { valid: false, message: 'La calidad debe estar entre 1% y 100%' };
+        }
+        return { valid: true };
+      });
+    }
+
+    // Initialize output controls
+    function initializeOutputControls() {
+      try {
+        // Initialize quality control
+        const qualitySelect = document.getElementById('output-quality');
+        const qualityNumber = document.getElementById('quality-number');
+        
+        if (qualitySelect && qualityNumber) {
+          // Set default value
+          qualitySelect.value = '80';
+          qualityNumber.value = '80';
+          handleQualityChange();
+        }
+        
+        // Initialize format control
+        const formatSelect = document.getElementById('output-format');
+        if (formatSelect) {
+          // Set default format based on original file or JPEG
+          if (originalExtension && ['jpg', 'jpeg'].includes(originalExtension.toLowerCase())) {
+            formatSelect.value = 'jpeg';
+          } else if (originalExtension && ['png'].includes(originalExtension.toLowerCase())) {
+            formatSelect.value = 'png';
+          } else if (originalExtension && ['webp'].includes(originalExtension.toLowerCase())) {
+            formatSelect.value = 'webp';
+          } else if (originalExtension && ['avif'].includes(originalExtension.toLowerCase())) {
+            formatSelect.value = 'avif';
+          } else {
+            formatSelect.value = 'jpeg'; // default fallback
+          }
+          handleFormatChange();
+        }
+        
+        // Check format support and disable unsupported formats
+        checkAndUpdateFormatSupport();
+        
+        console.log('Output controls initialized successfully');
+      } catch (error) {
+        console.error('Error initializing output controls:', error);
+      }
+    }
+
+    // Check format support and update UI
+    async function checkAndUpdateFormatSupport() {
+      const formatSelect = document.getElementById('output-format');
+      if (!formatSelect) return;
+      
+      const formats = ['webp', 'avif'];
+      
+      for (const format of formats) {
+        const isSupported = await checkFormatSupport(format);
+        const option = formatSelect.querySelector(`option[value="${format}"]`);
+        
+        if (option) {
+          if (!isSupported) {
+            option.disabled = true;
+            option.textContent += ' (No soportado)';
+            option.style.color = '#9ca3af';
+          }
+        }
+      }
     }
 
     // Funciones del tema oscuro
@@ -2876,13 +3316,6 @@
         .trim() || 'imagen_editada'; // Fallback si queda vacío
     }
 
-    // Función para convertir canvas a blob
-    async function canvasToBlob(canvas, mimeType) {
-      return new Promise((resolve) => {
-        canvas.toBlob(resolve, mimeType);
-      });
-    }
-
     function setupEventListeners() {
       try {
         // Upload de archivos con optimización
@@ -2996,6 +3429,43 @@
           console.error('Botón de tema no encontrado');
         }
         
+        // Output configuration controls
+        const outputQualitySelect = document.getElementById('output-quality');
+        const outputQualityNumber = document.getElementById('quality-number');
+        const outputFormatSelect = document.getElementById('output-format');
+        const outputHeader = document.getElementById('output-header');
+        
+        if (outputQualitySelect) {
+          outputQualitySelect.addEventListener('input', handleQualityChange);
+          outputQualitySelect.addEventListener('change', handleQualityChange);
+        }
+        
+        if (outputQualityNumber) {
+          outputQualityNumber.addEventListener('input', handleQualityNumberChange);
+          outputQualityNumber.addEventListener('change', handleQualityNumberChange);
+          outputQualityNumber.addEventListener('blur', handleQualityNumberChange);
+          // Handle Enter key
+          outputQualityNumber.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.target.blur();
+            }
+          });
+        }
+        
+        if (outputFormatSelect) {
+          outputFormatSelect.addEventListener('change', handleFormatChange);
+        }
+        
+        if (outputHeader) {
+          outputHeader.addEventListener('click', () => toggleCollapsible('output'));
+          outputHeader.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleCollapsible('output');
+            }
+          });
+        }
+        
         // Keyboard shortcuts
         document.addEventListener('keydown', handleKeyboardShortcuts);
         
@@ -3009,6 +3479,166 @@
       cache.watermarkImage = null;
       cache.lastWatermarkConfig = null;
       debouncedUpdatePreview();
+    }
+
+    // Output configuration handlers
+    function handleQualityChange() {
+      const qualitySelect = document.getElementById('output-quality');
+      const qualityNumber = document.getElementById('quality-number');
+      const qualityPercentage = document.getElementById('quality-percentage');
+      const qualityBar = document.getElementById('quality-bar');
+      
+      if (!qualitySelect || !qualityNumber || !qualityPercentage || !qualityBar) return;
+      
+      const qualityValue = parseInt(qualitySelect.value);
+      outputQuality = qualityValue / 100;
+      
+      // Sync the number input with slider
+      qualityNumber.value = qualityValue;
+      
+      // Update percentage display
+      qualityPercentage.textContent = qualityValue + '%';
+      
+      // Update progress bar with smooth animation
+      qualityBar.style.width = qualityValue + '%';
+      
+      // Update color based on quality with more nuanced ranges
+      if (qualityValue <= 30) {
+        qualityPercentage.className = 'text-sm font-bold text-red-600';
+      } else if (qualityValue <= 50) {
+        qualityPercentage.className = 'text-sm font-bold text-orange-600';
+      } else if (qualityValue <= 70) {
+        qualityPercentage.className = 'text-sm font-bold text-yellow-600';
+      } else if (qualityValue <= 85) {
+        qualityPercentage.className = 'text-sm font-bold text-blue-600';
+      } else {
+        qualityPercentage.className = 'text-sm font-bold text-green-600';
+      }
+      
+      // Update the slider track color dynamically
+      updateSliderBackground(qualityValue);
+      
+      console.log('Quality changed to:', qualityValue + '%');
+    }
+
+    function handleQualityNumberChange() {
+      const qualitySelect = document.getElementById('output-quality');
+      const qualityNumber = document.getElementById('quality-number');
+      
+      if (!qualitySelect || !qualityNumber) return;
+      
+      let qualityValue = parseInt(qualityNumber.value);
+      
+      // Validate and constrain the value
+      if (isNaN(qualityValue) || qualityValue < 1) {
+        qualityValue = 1;
+      } else if (qualityValue > 100) {
+        qualityValue = 100;
+      }
+      
+      // Update both inputs
+      qualityNumber.value = qualityValue;
+      qualitySelect.value = qualityValue;
+      
+      // Trigger the main quality change handler
+      handleQualityChange();
+    }
+
+    function updateSliderBackground(value) {
+      const slider = document.getElementById('output-quality');
+      if (!slider) return;
+      
+      // Create a dynamic gradient based on the current value
+      const percentage = value / 100;
+      const hue1 = 0;   // Red
+      const hue2 = 45;  // Orange/Yellow  
+      const hue3 = 120; // Green
+      
+      let currentHue;
+      if (percentage <= 0.5) {
+        // Interpolate between red and yellow
+        currentHue = hue1 + (hue2 - hue1) * (percentage * 2);
+      } else {
+        // Interpolate between yellow and green
+        currentHue = hue2 + (hue3 - hue2) * ((percentage - 0.5) * 2);
+      }
+      
+      const saturation = 70;
+      const lightness = 55;
+      
+      // Update CSS custom property for dynamic coloring
+      slider.style.setProperty('--slider-color', `hsl(${currentHue}, ${saturation}%, ${lightness}%)`);
+    }
+
+    function handleFormatChange() {
+      const formatSelect = document.getElementById('output-format');
+      const formatInfo = document.getElementById('format-info');
+      const formatDescription = document.getElementById('format-description');
+      const formatCompatibility = document.getElementById('format-compatibility');
+      
+      if (!formatSelect || !formatInfo || !formatDescription || !formatCompatibility) return;
+      
+      outputFormat = formatSelect.value;
+      
+      // Remove previous format classes
+      formatInfo.className = formatInfo.className.replace(/format-\w+/g, '');
+      formatInfo.classList.add('p-3', 'border', 'rounded-md', `format-${outputFormat}`);
+      
+      // Update format information
+      const formatData = getFormatInfo(outputFormat);
+      formatDescription.textContent = formatData.description;
+      formatCompatibility.textContent = formatData.compatibility;
+      formatCompatibility.className = `mt-1 font-medium ${formatData.compatibilityClass}`;
+      
+      console.log('Format changed to:', outputFormat);
+    }
+
+    function getFormatInfo(format) {
+      const formatInfo = {
+        jpeg: {
+          description: 'JPEG: Ideal para fotografías, menor tamaño de archivo.',
+          compatibility: 'Compatible con todos los navegadores',
+          compatibilityClass: 'text-green-600'
+        },
+        png: {
+          description: 'PNG: Ideal para imágenes con transparencia, sin pérdida de calidad.',
+          compatibility: 'Compatible con todos los navegadores',
+          compatibilityClass: 'text-green-600'
+        },
+        webp: {
+          description: 'WebP: Mejor compresión que JPEG/PNG, menor tamaño de archivo.',
+          compatibility: 'Compatible con navegadores modernos (95%+)',
+          compatibilityClass: 'text-blue-600'
+        },
+        avif: {
+          description: 'AVIF: Nueva generación, máxima compresión y calidad.',
+          compatibility: 'Compatible con navegadores recientes (80%+)',
+          compatibilityClass: 'text-orange-600'
+        }
+      };
+      
+      return formatInfo[format] || formatInfo.jpeg;
+    }
+
+    // Function to check format support
+    function checkFormatSupport(format) {
+      return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        
+        try {
+          const mimeType = `image/${format}`;
+          canvas.toBlob((blob) => {
+            resolve(blob !== null);
+          }, mimeType, 1);
+        } catch (error) {
+          resolve(false);
+        }
+        
+        // Timeout fallback
+        setTimeout(() => resolve(false), 100);
+      });
     }
 
     function handleKeyboardShortcuts(e) {
@@ -3851,8 +4481,42 @@
         metadataPreview.classList.remove('metadata-preview');
       }
       
+      // Resetear controles de salida
+      resetOutputControls();
+      
       // Actualizar vista previa
       updatePreview();
+    }
+
+    function resetOutputControls() {
+      // Reset quality to default (80%)
+      const qualitySelect = document.getElementById('output-quality');
+      const qualityNumber = document.getElementById('quality-number');
+      
+      if (qualitySelect && qualityNumber) {
+        qualitySelect.value = '80';
+        qualityNumber.value = '80';
+        outputQuality = 0.8;
+        handleQualityChange();
+      }
+      
+      // Reset format to JPEG (or original extension if available)
+      const formatSelect = document.getElementById('output-format');
+      if (formatSelect && originalExtension) {
+        if (['jpg', 'jpeg'].includes(originalExtension.toLowerCase())) {
+          formatSelect.value = 'jpeg';
+        } else if (['png'].includes(originalExtension.toLowerCase())) {
+          formatSelect.value = 'png';
+        } else if (['webp'].includes(originalExtension.toLowerCase())) {
+          formatSelect.value = 'webp';
+        } else if (['avif'].includes(originalExtension.toLowerCase())) {
+          formatSelect.value = 'avif';
+        } else {
+          formatSelect.value = 'jpeg';
+        }
+        outputFormat = formatSelect.value;
+        handleFormatChange();
+      }
     }
 
     async function downloadImage() {
@@ -3872,9 +4536,12 @@
         let filename = titleInput.value.trim() || 'imagen_editada';
         filename = sanitizeFilename(filename);
         
-        // Mantener la extensión original del archivo
-        const extension = originalExtension || 'jpg';
+        // Usar el formato seleccionado en lugar de la extensión original
+        const extension = getFileExtension(outputFormat);
         const fullFilename = `${filename}.${extension}`;
+        
+        // Obtener el tipo MIME basado en el formato seleccionado
+        const mimeType = getMimeType(outputFormat);
         
         // Usar la API File System Access si está disponible (Chrome/Edge modernos)
         if ('showSaveFilePicker' in window) {
@@ -3883,7 +4550,7 @@
             types: [{
               description: 'Imágenes',
               accept: {
-                'image/*': [`.${extension}`]
+                [mimeType]: [`.${extension}`]
               }
             }],
             startIn: lastDownloadDirectory || 'desktop'
@@ -3894,12 +4561,12 @@
             lastDownloadDirectory = await handle.queryPermission({ mode: 'readwrite' });
             
             const writable = await handle.createWritable();
-            const mimeType = extension === 'png' ? 'image/png' : 'image/jpeg';
-            const blob = await canvasToBlob(canvas, mimeType);
+            const blob = await canvasToBlob(canvas, mimeType, outputQuality);
             await writable.write(blob);
             await writable.close();
             
-            showSuccess('Imagen guardada exitosamente!');
+            const qualityText = outputFormat === 'png' ? '' : ` (calidad: ${Math.round(outputQuality * 100)}%)`;
+            showSuccess(`Imagen guardada exitosamente en formato ${outputFormat.toUpperCase()}${qualityText}!`);
             return;
           } catch (saveError) {
             // Si el usuario cancela, no mostrar error
@@ -3913,18 +4580,57 @@
         // Fallback para navegadores que no soportan la API o si falla
         const link = document.createElement('a');
         link.download = fullFilename;
-        const mimeType = extension === 'png' ? 'image/png' : 'image/jpeg';
-        link.href = canvas.toDataURL(mimeType, 0.9); // Calidad 90%
+        link.href = canvas.toDataURL(mimeType, outputQuality);
         
         // Simular click
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         
+        const qualityText = outputFormat === 'png' ? '' : ` (calidad: ${Math.round(outputQuality * 100)}%)`;
+        showSuccess(`Imagen descargada en formato ${outputFormat.toUpperCase()}${qualityText}!`);
+        
       } catch (error) {
         console.error('Error al descargar:', error);
         showError('Error al descargar la imagen.');
       }
+    }
+
+    // Helper functions for format handling
+    function getFileExtension(format) {
+      const extensions = {
+        'jpeg': 'jpg',
+        'png': 'png',
+        'webp': 'webp',
+        'avif': 'avif'
+      };
+      return extensions[format] || 'jpg';
+    }
+
+    function getMimeType(format) {
+      const mimeTypes = {
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'webp': 'image/webp',
+        'avif': 'image/avif'
+      };
+      return mimeTypes[format] || 'image/jpeg';
+    }
+
+    // Enhanced canvasToBlob function with quality control
+    async function canvasToBlob(canvas, mimeType, quality = 0.9) {
+      return new Promise((resolve, reject) => {
+        try {
+          // For formats that don't support quality, ignore the quality parameter
+          if (mimeType === 'image/png') {
+            canvas.toBlob(resolve, mimeType);
+          } else {
+            canvas.toBlob(resolve, mimeType, quality);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
     }
 
     function removeSelectedFile() {
