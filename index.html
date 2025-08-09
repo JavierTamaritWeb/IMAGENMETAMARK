@@ -878,6 +878,137 @@
       box-shadow: var(--shadow-lg);
     }
 
+    .btn-outline {
+      background-color: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background-color: var(--bg-accent);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline:disabled {
+      color: var(--text-tertiary);
+      border-color: var(--border-color);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    [data-theme="dark"] .btn-outline {
+      background-color: transparent;
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    [data-theme="dark"] .btn-outline:hover:not(:disabled) {
+      background-color: var(--bg-accent);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    [data-theme="dark"] .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: var(--shadow-md);
+    }
+
+    [data-theme="dark"] .btn-success:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      box-shadow: var(--shadow-xl);
+    }
+
+    /* Fullscreen styles */
+    .fullscreen-mode {
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .fullscreen-mode canvas {
+      border-radius: 8px;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Compare overlay styles */
+    .preview__container {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* History button animations */
+    .btn:disabled {
+      transform: none !important;
+      transition: opacity 0.3s ease;
+    }
+
+    .btn:not(:disabled):hover {
+      transform: translateY(-1px);
+    }
+
+    /* Tooltip styles */
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      z-index: 1000;
+      box-shadow: var(--shadow-lg);
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    [data-tooltip]:hover::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% - 5px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--bg-secondary);
+      z-index: 1000;
+    }
+
+    /* Dark mode tooltips */
+    [data-theme="dark"] [data-tooltip]:hover::after {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+    }
+
+    [data-theme="dark"] [data-tooltip]:hover::before {
+      border-top-color: var(--bg-tertiary);
+    }
+
     .btn-success {
       background: linear-gradient(135deg, var(--success), var(--success-hover));
       color: white;
@@ -2549,23 +2680,39 @@
         <!-- Preview Section - Now below the grid -->
         <section class="mb-8">
           <div class="bg-white rounded-lg shadow-md p-6 card">
-            <h2 class="text-xl font-semibold mb-4">5. Vista previa</h2>
-            <div class="preview__container">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-xl font-semibold">5. Vista previa</h2>
+              <div class="flex gap-2">
+                <button id="fullscreen-btn" class="btn btn-primary button--action">
+                  <i class="fas fa-expand" aria-hidden="true"></i>
+                  Pantalla completa
+                </button>
+              </div>
+            </div>
+            <div class="preview__container relative">
               <canvas id="preview-canvas" class="preview__canvas"></canvas>
             </div>
             <div class="mt-4 flex justify-between gap-3">
-              <button id="reset-changes"
-                      class="btn btn-secondary"
-                      data-tooltip="Restablecer todos los cambios">
-                <i class="fas fa-undo" aria-hidden="true"></i>
-                Restablecer
-              </button>
-              <button id="download-image"
-                      class="btn btn-success"
-                      data-tooltip="Descargar imagen procesada">
-                <i class="fas fa-download" aria-hidden="true"></i>
-                Descargar imagen
-              </button>
+              <div class="flex gap-2">
+                <button id="undo-btn" class="btn btn-primary button--action" disabled>
+                  <i class="fas fa-undo-alt" aria-hidden="true"></i>
+                  Deshacer
+                </button>
+                <button id="redo-btn" class="btn btn-primary button--action" disabled>
+                  <i class="fas fa-redo-alt" aria-hidden="true"></i>
+                  Rehacer
+                </button>
+              </div>
+              <div class="flex gap-2">
+                <button id="reset-changes" class="btn btn-primary button--action">
+                  <i class="fas fa-refresh" aria-hidden="true"></i>
+                  Restablecer
+                </button>
+                <button id="download-image" class="btn btn-primary button--action">
+                  <i class="fas fa-download" aria-hidden="true"></i>
+                  Descargar imagen
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -2580,7 +2727,6 @@
   <script>
     // Variables globales optimizadas
     let currentImage = null;
-    let originalImageData = null;
     let canvas = null;
     let ctx = null;
     let currentFile = null;
@@ -2595,6 +2741,154 @@
     let customImagePosition = null;
     let isPositioningMode = false;
     let watermarkImagePreview = null;
+    
+    // Sistema de historial para deshacer/rehacer
+    const historyManager = {
+      states: [],
+      currentIndex: -1,
+      maxStates: 20,
+      
+      saveState: function() {
+        if (!canvas || !currentImage) return;
+        
+        // Remover estados futuros si estamos en medio del historial
+        this.states = this.states.slice(0, this.currentIndex + 1);
+        
+        // Guardar estado actual
+        const state = {
+          imageData: canvas.toDataURL(),
+          metadata: this.getCurrentMetadata(),
+          watermarkConfig: this.getCurrentWatermarkConfig(),
+          timestamp: Date.now()
+        };
+        
+        this.states.push(state);
+        this.currentIndex++;
+        
+        // Limitar el número de estados
+        if (this.states.length > this.maxStates) {
+          this.states.shift();
+          this.currentIndex--;
+        }
+        
+        this.updateUndoRedoButtons();
+      },
+      
+      undo: function() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+          this.restoreState(this.states[this.currentIndex]);
+          this.updateUndoRedoButtons();
+          UIManager.showSuccess('Acción deshecha');
+        }
+      },
+      
+      redo: function() {
+        if (this.currentIndex < this.states.length - 1) {
+          this.currentIndex++;
+          this.restoreState(this.states[this.currentIndex]);
+          this.updateUndoRedoButtons();
+          UIManager.showSuccess('Acción rehecha');
+        }
+      },
+      
+      canUndo: function() {
+        return this.currentIndex > 0;
+      },
+      
+      canRedo: function() {
+        return this.currentIndex < this.states.length - 1;
+      },
+      
+      updateUndoRedoButtons: function() {
+        const undoBtn = document.getElementById('undo-btn');
+        const redoBtn = document.getElementById('redo-btn');
+        
+        if (undoBtn) {
+          undoBtn.disabled = !this.canUndo();
+          undoBtn.style.opacity = this.canUndo() ? '1' : '0.5';
+        }
+        
+        if (redoBtn) {
+          redoBtn.disabled = !this.canRedo();
+          redoBtn.style.opacity = this.canRedo() ? '1' : '0.5';
+        }
+      },
+      
+      getCurrentMetadata: function() {
+        const form = document.getElementById('metadata-form');
+        if (!form) return {};
+        
+        const formData = new FormData(form);
+        return Object.fromEntries(formData);
+      },
+      
+      getCurrentWatermarkConfig: function() {
+        return {
+          textEnabled: document.getElementById('watermark-text-enabled')?.checked || false,
+          imageEnabled: document.getElementById('watermark-image-enabled')?.checked || false,
+          text: document.getElementById('watermark-text')?.value || '',
+          font: document.getElementById('watermark-font')?.value || 'Arial',
+          color: document.getElementById('watermark-color')?.value || '#000000',
+          size: document.getElementById('watermark-size')?.value || '24',
+          opacity: document.getElementById('watermark-opacity')?.value || '50',
+          position: document.getElementById('watermark-position')?.value || 'bottom-right',
+          imageOpacity: document.getElementById('watermark-image-opacity')?.value || '50',
+          imageSize: document.getElementById('watermark-image-size')?.value || 'medium',
+          imagePosition: document.getElementById('watermark-image-position')?.value || 'bottom-right',
+          customPosition: customImagePosition
+        };
+      },
+      
+      restoreState: function(state) {
+        if (!state || !canvas) return;
+        
+        const img = new Image();
+        img.onload = function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          
+          // Restaurar metadatos
+          if (state.metadata) {
+            const form = document.getElementById('metadata-form');
+            if (form) {
+              Object.entries(state.metadata).forEach(([key, value]) => {
+                const field = form.querySelector(`[name="${key}"]`);
+                if (field) field.value = value;
+              });
+            }
+          }
+          
+          // Restaurar configuración de marca de agua
+          if (state.watermarkConfig) {
+            const config = state.watermarkConfig;
+            Object.entries(config).forEach(([key, value]) => {
+              const element = document.getElementById(`watermark-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`);
+              if (element) {
+                if (element.type === 'checkbox') {
+                  element.checked = value;
+                } else {
+                  element.value = value;
+                }
+              }
+            });
+            
+            if (config.customPosition) {
+              customImagePosition = config.customPosition;
+            }
+          }
+          
+          toggleWatermarkType();
+        };
+        img.src = state.imageData;
+      },
+      
+      clear: function() {
+        this.states = [];
+        this.currentIndex = -1;
+        this.updateUndoRedoButtons();
+      }
+    };
     
     // Cache para optimización de rendimiento
     const cache = {
@@ -3411,6 +3705,8 @@
         // Action buttons
         const resetChangesBtn = document.getElementById('reset-changes');
         const downloadImageBtn = document.getElementById('download-image');
+        const undoBtn = document.getElementById('undo-btn');
+        const redoBtn = document.getElementById('redo-btn');
         
         if (resetChangesBtn) {
           resetChangesBtn.addEventListener('click', resetChanges);
@@ -3418,6 +3714,23 @@
         
         if (downloadImageBtn) {
           downloadImageBtn.addEventListener('click', downloadImage);
+        }
+        
+        if (undoBtn) {
+          undoBtn.addEventListener('click', () => historyManager.undo());
+        }
+        
+        if (redoBtn) {
+          redoBtn.addEventListener('click', () => historyManager.redo());
+        }
+        
+        // Compare and fullscreen buttons
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        
+        console.log('Botón fullscreen encontrado:', fullscreenBtn);
+        
+        if (fullscreenBtn) {
+          fullscreenBtn.addEventListener('click', toggleFullscreen);
         }
         
         // Theme toggle button - CRÍTICO PARA EL MODO OSCURO
@@ -3650,6 +3963,23 @@
         }
       }
       
+      // Ctrl+Z or Cmd+Z to undo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        if (historyManager.canUndo()) {
+          historyManager.undo();
+        }
+      }
+      
+      // Ctrl+Y or Cmd+Y or Ctrl+Shift+Z to redo
+      if (((e.ctrlKey || e.metaKey) && e.key === 'y') || 
+          ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z')) {
+        e.preventDefault();
+        if (historyManager.canRedo()) {
+          historyManager.redo();
+        }
+      }
+      
       // Ctrl+R or Cmd+R to reset (prevent page reload)
       if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
         e.preventDefault();
@@ -3812,7 +4142,9 @@
           }
 
           currentImage = img;
-          originalImageData = src;
+          
+          console.log('=== IMAGEN CARGADA ===');
+          console.log('currentImage asignado:', !!currentImage);
           
           // Sanitizar y mostrar información del archivo
           const sanitizedFileName = SecurityManager.sanitizeText(fileName);
@@ -3848,6 +4180,12 @@
           
           // Limpiar estado de carga
           UIManager.hideLoadingState();
+          
+          // Inicializar historial con estado inicial
+          setTimeout(() => {
+            historyManager.clear();
+            historyManager.saveState();
+          }, 100);
           
         } catch (error) {
           UIManager.hideLoadingState();
@@ -3915,6 +4253,14 @@
         
         // Apply watermark with caching
         applyWatermarkOptimized();
+        
+        // Save state to history (debounced)
+        if (typeof debouncedSaveHistory === 'undefined') {
+          window.debouncedSaveHistory = UIManager.debounce(() => {
+            historyManager.saveState();
+          }, 1000);
+        }
+        debouncedSaveHistory();
       });
     }
 
@@ -4484,8 +4830,16 @@
       // Resetear controles de salida
       resetOutputControls();
       
+      // Limpiar historial
+      historyManager.clear();
+      
       // Actualizar vista previa
       updatePreview();
+      
+      // Guardar estado inicial
+      setTimeout(() => {
+        historyManager.saveState();
+      }, 100);
     }
 
     function resetOutputControls() {
@@ -4635,7 +4989,15 @@
 
     function removeSelectedFile() {
       currentImage = null;
-      originalImageData = null;
+      currentFile = null;
+      originalExtension = 'jpg';
+      watermarkImagePreview = null;
+      customImagePosition = null;
+      isPositioningMode = false;
+      
+      // Limpiar cache
+      cache.watermarkImage = null;
+      cache.lastWatermarkConfig = null;
       
       // Limpiar formularios
       document.getElementById('file-input').value = '';
@@ -4651,7 +5013,84 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       
-      hideError();
+      // Limpiar marcador de posición si existe
+      removePositionMarker();
+      
+      // Ocultar información de posicionamiento personalizado
+      const customInfo = document.getElementById('custom-position-info');
+      if (customInfo) {
+        customInfo.style.display = 'none';
+      }
+      
+      // Quitar clase de posicionamiento del canvas
+      if (canvas) {
+        canvas.classList.remove('positioning-mode');
+      }
+      
+      // Ocultar preview de metadatos si está visible
+      hideMetadataPreview();
+      
+      // Resetear controles de salida
+      resetOutputControls();
+      
+      UIManager.hideError();
+      UIManager.showSuccess('Archivo removido correctamente');
+    }
+
+    // Funciones de pantalla completa
+    function toggleFullscreen() {
+      const canvas = document.getElementById('preview-canvas');
+      const container = canvas.parentElement;
+      
+      if (!document.fullscreenElement) {
+        // Entrar en pantalla completa
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen();
+        }
+        
+        // Agregar clase para estilos de pantalla completa
+        container.classList.add('fullscreen-mode');
+        canvas.style.maxWidth = '100vw';
+        canvas.style.maxHeight = '100vh';
+        canvas.style.objectFit = 'contain';
+        
+      } else {
+        // Salir de pantalla completa
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    function handleFullscreenChange() {
+      const canvas = document.getElementById('preview-canvas');
+      const container = canvas.parentElement;
+      const fullscreenBtn = document.getElementById('fullscreen-btn');
+      
+      if (!document.fullscreenElement) {
+        // Saliendo de pantalla completa
+        container.classList.remove('fullscreen-mode');
+        canvas.style.maxWidth = '';
+        canvas.style.maxHeight = '';
+        canvas.style.objectFit = '';
+        
+        if (fullscreenBtn) {
+          fullscreenBtn.innerHTML = '<i class="fas fa-expand" aria-hidden="true"></i> Pantalla completa';
+        }
+      } else {
+        // Entrando en pantalla completa
+        if (fullscreenBtn) {
+          fullscreenBtn.innerHTML = '<i class="fas fa-compress" aria-hidden="true"></i> Salir';
+        }
+      }
     }
 
     function showError(message) {
