@@ -1384,6 +1384,87 @@
     .watermark-options__custom-size--visible {
       display: block;
     }
+
+    /* Posicionamiento personalizado de imagen */
+    .positioning-mode {
+      cursor: crosshair !important;
+      position: relative;
+    }
+
+    .positioning-mode::after {
+      content: "Haz clic para posicionar la marca de agua";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 10;
+      animation: pulse 2s infinite;
+    }
+
+    .custom-position-marker {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--accent-primary);
+      border: 2px solid white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: var(--shadow-lg);
+      z-index: 5;
+      animation: bounce 1s ease-in-out;
+    }
+
+    .custom-position-marker::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      40% {
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+      60% {
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+    }
+
+    /* Dark mode para posicionamiento */
+    [data-theme="dark"] .positioning-mode::after {
+      background: var(--accent-primary);
+      box-shadow: var(--shadow-xl);
+    }
+
+    [data-theme="dark"] .custom-position-marker {
+      background: var(--accent-primary);
+      border-color: var(--bg-primary);
+    }
+
+    [data-theme="dark"] #custom-position-info {
+      background-color: rgba(96, 165, 250, 0.1) !important;
+      border-color: var(--accent-primary) !important;
+    }
+
+    [data-theme="dark"] #custom-position-info p {
+      color: var(--accent-primary) !important;
+    }
+
     /* Form Controls */
     input[type=range] {
       -webkit-appearance: none;
@@ -1964,7 +2045,16 @@
                           <option value="bottom-left">Inferior izquierda</option>
                           <option value="bottom-center">Inferior centro</option>
                           <option value="bottom-right">Inferior derecha</option>
+                          <option value="custom">Posición personalizada (clic en imagen)</option>
                         </select>
+                      </div>
+                      <div id="custom-position-info" class="mb-4" style="display: none;">
+                        <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+                          <p class="text-sm text-blue-700">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Haz clic en la imagen de vista previa para posicionar la marca de agua donde quieras.
+                          </p>
+                        </div>
                       </div>
                     </div>
                     <div id="watermark-image-custom-size" class="watermark-options__custom-size">
@@ -2038,6 +2128,11 @@
     let currentFile = null;
     let originalExtension = 'jpg';
     let lastDownloadDirectory = null;
+    
+    // Variables para posicionamiento interactivo de imagen
+    let customImagePosition = null;
+    let isPositioningMode = false;
+    let watermarkImagePreview = null;
     
     // Cache para optimización de rendimiento
     const cache = {
@@ -2304,6 +2399,8 @@
         // Inicializar estado de marcas de agua
         setTimeout(() => {
           toggleWatermarkType();
+          // Inicializar modo de posicionamiento
+          togglePositioningMode();
         }, 100);
         
         console.log('Aplicación inicializada correctamente');
@@ -2773,6 +2870,17 @@
           }
         });
         
+        // Posicionamiento personalizado para imagen
+        const watermarkImagePosition = document.getElementById('watermark-image-position');
+        if (watermarkImagePosition) {
+          watermarkImagePosition.addEventListener('change', togglePositioningMode);
+        }
+        
+        // Event listener para el canvas en modo posicionamiento
+        if (canvas) {
+          canvas.addEventListener('click', handleCanvasClick);
+        }
+        
         // Image watermark controls
         const watermarkImage = document.getElementById('watermark-image');
         if (watermarkImage) {
@@ -3158,7 +3266,8 @@
         size: document.getElementById('watermark-image-size').value,
         position: document.getElementById('watermark-image-position').value,
         width: document.getElementById('watermark-image-width').value,
-        height: document.getElementById('watermark-image-height').value
+        height: document.getElementById('watermark-image-height').value,
+        customPosition: customImagePosition ? JSON.stringify(customImagePosition) : null
       };
       
       const configChanged = !cache.lastWatermarkConfig || 
@@ -3174,6 +3283,8 @@
       reader.onload = function(e) {
         const watermarkImg = new Image();
         watermarkImg.onload = function() {
+          // Guardar imagen para referencia en el posicionamiento
+          watermarkImagePreview = watermarkImg;
           cache.watermarkImage = watermarkImg;
           cache.lastWatermarkConfig = currentConfig;
           drawCachedWatermark(watermarkImg, currentConfig);
@@ -3191,8 +3302,8 @@
       // Calculate size with caching
       let { width, height } = calculateWatermarkImageSize(watermarkImg, sizeOption);
       
-      // Calculate position
-      const positions = getWatermarkPosition(position, width, height);
+      // Calculate position usando la función específica para imagen
+      const positions = getImageWatermarkPosition(position, width, height);
       
       // Draw image with enhanced quality and shadow
       ctx.globalAlpha = opacity;
@@ -3294,6 +3405,19 @@
       return { x, y };
     }
 
+    function getImageWatermarkPosition(position, width, height) {
+      // Si es posición personalizada, usar las coordenadas del clic
+      if (position === 'custom' && customImagePosition) {
+        return {
+          x: customImagePosition.x - width / 2,
+          y: customImagePosition.y - height / 2
+        };
+      }
+      
+      // Si no, usar la función estándar
+      return getWatermarkPosition(position, width, height);
+    }
+
     function toggleWatermarkType() {
       const textOptions = document.getElementById('text-watermark-options');
       const imageOptions = document.getElementById('image-watermark-options');
@@ -3334,6 +3458,96 @@
       }
       
       updatePreview();
+    }
+
+    // Funciones para posicionamiento personalizado de imagen
+    function togglePositioningMode() {
+      const positionSelect = document.getElementById('watermark-image-position');
+      const customInfo = document.getElementById('custom-position-info');
+      
+      if (positionSelect.value === 'custom') {
+        isPositioningMode = true;
+        customInfo.style.display = 'block';
+        
+        // Agregar clase al canvas para el cursor
+        if (canvas) {
+          canvas.classList.add('positioning-mode');
+        }
+        
+        // Si ya hay una posición personalizada, mostrar el marcador
+        if (customImagePosition) {
+          showPositionMarker();
+        }
+      } else {
+        isPositioningMode = false;
+        customInfo.style.display = 'none';
+        customImagePosition = null;
+        
+        // Quitar clase del canvas
+        if (canvas) {
+          canvas.classList.remove('positioning-mode');
+        }
+        
+        // Quitar marcador si existe
+        removePositionMarker();
+      }
+      
+      debouncedUpdatePreview();
+    }
+
+    function handleCanvasClick(event) {
+      if (!isPositioningMode || !watermarkImagePreview) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      const x = (event.clientX - rect.left) * scaleX;
+      const y = (event.clientY - rect.top) * scaleY;
+      
+      // Guardar la posición personalizada
+      customImagePosition = { x, y };
+      
+      // Mostrar marcador visual
+      showPositionMarker();
+      
+      // Actualizar vista previa
+      updatePreview();
+      
+      UIManager.showSuccess('Posición de marca de agua actualizada');
+    }
+
+    function showPositionMarker() {
+      if (!customImagePosition || !canvas) return;
+      
+      // Quitar marcador anterior si existe
+      removePositionMarker();
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = rect.width / canvas.width;
+      const scaleY = rect.height / canvas.height;
+      
+      const marker = document.createElement('div');
+      marker.className = 'custom-position-marker';
+      marker.id = 'position-marker';
+      
+      const displayX = customImagePosition.x * scaleX;
+      const displayY = customImagePosition.y * scaleY;
+      
+      marker.style.left = displayX + 'px';
+      marker.style.top = displayY + 'px';
+      
+      // Agregar al contenedor del canvas
+      const container = canvas.parentElement;
+      container.style.position = 'relative';
+      container.appendChild(marker);
+    }
+
+    function removePositionMarker() {
+      const marker = document.getElementById('position-marker');
+      if (marker) {
+        marker.remove();
+      }
     }
 
     // Enhanced metadata form handler with validation
@@ -3467,6 +3681,21 @@
       document.getElementById('watermark-text-enabled').checked = true;
       document.getElementById('watermark-image-enabled').checked = false;
       toggleWatermarkType();
+      
+      // Limpiar posicionamiento personalizado
+      customImagePosition = null;
+      isPositioningMode = false;
+      watermarkImagePreview = null;
+      removePositionMarker();
+      
+      const customInfo = document.getElementById('custom-position-info');
+      if (customInfo) {
+        customInfo.style.display = 'none';
+      }
+      
+      if (canvas) {
+        canvas.classList.remove('positioning-mode');
+      }
       
       // Actualizar vista previa
       updatePreview();
