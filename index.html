@@ -1465,6 +1465,55 @@
       color: var(--accent-primary) !important;
     }
 
+    /* Estilos para previsualización de metadatos */
+    .metadata-preview--hidden {
+      display: none;
+    }
+
+    .preview-field--hidden {
+      display: none;
+    }
+
+    .metadata-preview {
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .metadata-preview .bg-gray-50 {
+      background-color: var(--bg-accent) !important;
+      border-color: var(--accent-primary);
+      transition: var(--transition);
+    }
+
+    .metadata-preview h4 {
+      color: var(--text-primary) !important;
+    }
+
+    .metadata-preview .text-gray-600 {
+      color: var(--text-secondary) !important;
+    }
+
+    .metadata-preview .text-gray-800 {
+      color: var(--text-primary) !important;
+    }
+
+    /* Dark mode para previsualización */
+    [data-theme="dark"] .metadata-preview .bg-gray-50 {
+      background-color: var(--bg-tertiary) !important;
+      border-color: var(--accent-primary);
+    }
+
+    [data-theme="dark"] .metadata-preview h4 {
+      color: var(--text-primary) !important;
+    }
+
+    [data-theme="dark"] .metadata-preview .text-gray-600 {
+      color: var(--text-secondary) !important;
+    }
+
+    [data-theme="dark"] .metadata-preview .text-gray-800 {
+      color: var(--text-primary) !important;
+    }
+
     /* Form Controls */
     input[type=range] {
       -webkit-appearance: none;
@@ -1909,6 +1958,45 @@
                     </button>
                   </div>
                 </form>
+                
+                <!-- Previsualización de metadatos -->
+                <div id="metadata-preview" class="metadata-preview--hidden">
+                  <div class="mt-6 p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+                    <div class="flex justify-between items-center mb-3">
+                      <h4 class="text-sm font-semibold text-gray-700 flex items-center">
+                        <i class="fas fa-eye mr-2 text-blue-500"></i>
+                        Metadatos guardados
+                      </h4>
+                      <button onclick="hideMetadataPreview()" 
+                              class="text-gray-400 hover:text-gray-600 transition-colors"
+                              aria-label="Ocultar previsualización">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                      <div id="preview-title" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Título:</span>
+                        <span class="text-gray-800 ml-2" id="preview-title-value"></span>
+                      </div>
+                      <div id="preview-author" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Autor:</span>
+                        <span class="text-gray-800 ml-2" id="preview-author-value"></span>
+                      </div>
+                      <div id="preview-description" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Descripción:</span>
+                        <span class="text-gray-800 ml-2" id="preview-description-value"></span>
+                      </div>
+                      <div id="preview-keywords" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Palabras clave:</span>
+                        <span class="text-gray-800 ml-2" id="preview-keywords-value"></span>
+                      </div>
+                      <div id="preview-copyright" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Copyright:</span>
+                        <span class="text-gray-800 ml-2" id="preview-copyright-value"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -2115,7 +2203,7 @@
     </main>
 
     <footer class="mt-12 text-center text-gray-500 text-sm">
-      <p class="footer-text">© 2023 ImageMetadataPro. Todos los derechos reservados.</p>
+      <p class="footer-text">© 2025 ImageMetadataPro. Todos los derechos reservados.</p>
     </footer>
   </div>
 
@@ -3592,16 +3680,75 @@
         
         console.log('Metadatos validados y sanitizados:', sanitizedMetadata);
         
+        // Mostrar previsualización de metadatos
+        showMetadataPreview(sanitizedMetadata);
+        
         // Simular procesamiento
         setTimeout(() => {
           form.classList.remove('form-loading');
-          showSuccess('Metadatos guardados correctamente.');
+          UIManager.showSuccess('Metadatos guardados correctamente.');
         }, 500);
         
       } catch (error) {
         form.classList.remove('form-loading');
         console.error('Error al procesar metadatos:', error);
-        showError('Error al procesar los metadatos. Por favor, inténtalo de nuevo.');
+        UIManager.showError('Error al procesar los metadatos. Por favor, inténtalo de nuevo.');
+      }
+    }
+
+    // Función para mostrar la previsualización de metadatos
+    function showMetadataPreview(metadata) {
+      const previewContainer = document.getElementById('metadata-preview');
+      
+      // Campos a mostrar
+      const fields = [
+        { key: 'title', label: 'Título' },
+        { key: 'author', label: 'Autor' },
+        { key: 'description', label: 'Descripción' },
+        { key: 'keywords', label: 'Palabras clave' },
+        { key: 'copyright', label: 'Copyright' }
+      ];
+      
+      let hasContent = false;
+      
+      // Mostrar cada campo si tiene contenido
+      fields.forEach(field => {
+        const value = metadata[field.key];
+        const fieldElement = document.getElementById(`preview-${field.key}`);
+        const valueElement = document.getElementById(`preview-${field.key}-value`);
+        
+        if (value && value.trim()) {
+          fieldElement.classList.remove('preview-field--hidden');
+          valueElement.textContent = value;
+          hasContent = true;
+        } else {
+          fieldElement.classList.add('preview-field--hidden');
+        }
+      });
+      
+      // Mostrar/ocultar el contenedor principal
+      if (hasContent) {
+        previewContainer.classList.remove('metadata-preview--hidden');
+        previewContainer.classList.add('metadata-preview');
+        
+        // Scroll suave hacia la previsualización
+        setTimeout(() => {
+          previewContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'nearest' 
+          });
+        }, 100);
+      } else {
+        previewContainer.classList.add('metadata-preview--hidden');
+      }
+    }
+
+    // Función para ocultar la previsualización de metadatos
+    function hideMetadataPreview() {
+      const previewContainer = document.getElementById('metadata-preview');
+      if (previewContainer) {
+        previewContainer.classList.add('metadata-preview--hidden');
+        previewContainer.classList.remove('metadata-preview');
       }
     }
 
@@ -3695,6 +3842,13 @@
       
       if (canvas) {
         canvas.classList.remove('positioning-mode');
+      }
+      
+      // Ocultar previsualización de metadatos
+      const metadataPreview = document.getElementById('metadata-preview');
+      if (metadataPreview) {
+        metadataPreview.classList.add('metadata-preview--hidden');
+        metadataPreview.classList.remove('metadata-preview');
       }
       
       // Actualizar vista previa
