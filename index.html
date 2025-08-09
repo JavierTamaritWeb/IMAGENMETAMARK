@@ -1854,13 +1854,13 @@
                     <label class="block text-gray-700 font-medium mb-2 form-label">Tipo de marca</label>
                     <div class="flex space-x-4">
                       <label class="inline-flex items-center">
-                        <input type="radio" name="watermark-type" value="text" checked
-                               class="form-radio text-blue-500">
+                        <input type="checkbox" id="watermark-text-enabled" name="watermark-text-enabled" checked
+                               class="form-checkbox text-blue-500">
                         <span class="ml-2 text-content">Texto</span>
                       </label>
                       <label class="inline-flex items-center">
-                        <input type="radio" name="watermark-type" value="image"
-                               class="form-radio text-blue-500">
+                        <input type="checkbox" id="watermark-image-enabled" name="watermark-image-enabled"
+                               class="form-checkbox text-blue-500">
                         <span class="ml-2 text-content">Imagen</span>
                       </label>
                     </div>
@@ -2301,6 +2301,11 @@
         // Configurar interceptores de errores globales
         setupGlobalErrorHandling();
         
+        // Inicializar estado de marcas de agua
+        setTimeout(() => {
+          toggleWatermarkType();
+        }, 100);
+        
         console.log('Aplicación inicializada correctamente');
         
       } catch (error) {
@@ -2727,10 +2732,16 @@
         }
         
         // Watermark type toggle
-        const watermarkTypeRadios = document.querySelectorAll('input[name="watermark-type"]');
-        watermarkTypeRadios.forEach(radio => {
-          radio.addEventListener('change', toggleWatermarkType);
-        });
+        const textEnabledCheckbox = document.getElementById('watermark-text-enabled');
+        const imageEnabledCheckbox = document.getElementById('watermark-image-enabled');
+        
+        if (textEnabledCheckbox) {
+          textEnabledCheckbox.addEventListener('change', toggleWatermarkType);
+        }
+        
+        if (imageEnabledCheckbox) {
+          imageEnabledCheckbox.addEventListener('change', toggleWatermarkType);
+        }
         
         // Custom image size toggle
         const watermarkImageSize = document.getElementById('watermark-image-size');
@@ -2740,6 +2751,8 @@
         
         // Real-time controls with debouncing for better performance - con verificación de existencia
         const controls = [
+          { id: 'watermark-text-enabled', event: 'change' },
+          { id: 'watermark-image-enabled', event: 'change' },
           { id: 'watermark-text', event: 'input' },
           { id: 'watermark-font', event: 'change' },
           { id: 'watermark-color', event: 'change' },
@@ -3080,11 +3093,16 @@
     }
 
     function applyWatermarkOptimized() {
-      const watermarkType = document.querySelector('input[name="watermark-type"]:checked').value;
+      const textEnabled = document.getElementById('watermark-text-enabled').checked;
+      const imageEnabled = document.getElementById('watermark-image-enabled').checked;
       
-      if (watermarkType === 'text') {
+      // Aplicar marca de agua de texto si está habilitada
+      if (textEnabled) {
         applyTextWatermarkOptimized();
-      } else {
+      }
+      
+      // Aplicar marca de agua de imagen si está habilitada
+      if (imageEnabled) {
         applyImageWatermarkOptimized();
       }
     }
@@ -3279,18 +3297,25 @@
     function toggleWatermarkType() {
       const textOptions = document.getElementById('text-watermark-options');
       const imageOptions = document.getElementById('image-watermark-options');
-      const selectedType = document.querySelector('input[name="watermark-type"]:checked').value;
+      const textEnabled = document.getElementById('watermark-text-enabled').checked;
+      const imageEnabled = document.getElementById('watermark-image-enabled').checked;
       
-      if (selectedType === 'text') {
+      // Mostrar/ocultar opciones de texto
+      if (textEnabled) {
         textOptions.classList.remove('watermark-options__text--hidden');
         textOptions.classList.add('watermark-options__text');
-        imageOptions.classList.remove('watermark-options__image--visible');
-        imageOptions.classList.add('watermark-options__image');
       } else {
         textOptions.classList.remove('watermark-options__text');
         textOptions.classList.add('watermark-options__text--hidden');
+      }
+      
+      // Mostrar/ocultar opciones de imagen
+      if (imageEnabled) {
         imageOptions.classList.remove('watermark-options__image');
         imageOptions.classList.add('watermark-options__image--visible');
+      } else {
+        imageOptions.classList.remove('watermark-options__image--visible');
+        imageOptions.classList.add('watermark-options__image');
       }
       
       updatePreview();
@@ -3376,14 +3401,22 @@
       }
 
       const form = e.target;
-      const watermarkType = document.querySelector('input[name="watermark-type"]:checked').value;
+      const textEnabled = document.getElementById('watermark-text-enabled').checked;
+      const imageEnabled = document.getElementById('watermark-image-enabled').checked;
+      
+      // Verificar que al menos una opción esté habilitada
+      if (!textEnabled && !imageEnabled) {
+        UIManager.showError('Debe habilitar al menos un tipo de marca de agua');
+        return;
+      }
       
       // Limpiar errores anteriores
       FormValidator.clearFormErrors('watermark-form');
       form.classList.add('form-loading');
 
       try {
-        if (watermarkType === 'text') {
+        // Validar marca de agua de texto si está habilitada
+        if (textEnabled) {
           const text = document.getElementById('watermark-text').value;
           const size = document.getElementById('watermark-size').value;
           const opacity = document.getElementById('watermark-opacity').value;
@@ -3392,7 +3425,17 @@
           const validation = SecurityManager.validateWatermarkText(text, size, opacity);
           
           if (!validation.isValid) {
-            validation.errors.forEach(error => showError(error));
+            validation.errors.forEach(error => UIManager.showError(error));
+            form.classList.remove('form-loading');
+            return;
+          }
+        }
+        
+        // Validar marca de agua de imagen si está habilitada
+        if (imageEnabled) {
+          const watermarkImageInput = document.getElementById('watermark-image');
+          if (!watermarkImageInput.files[0]) {
+            UIManager.showError('Debe seleccionar una imagen para la marca de agua');
             form.classList.remove('form-loading');
             return;
           }
@@ -3403,7 +3446,7 @@
         
         setTimeout(() => {
           form.classList.remove('form-loading');
-          showSuccess('Marca de agua aplicada correctamente.');
+          UIManager.showSuccess('Marca de agua aplicada correctamente.');
         }, 300);
         
       } catch (error) {
@@ -3421,7 +3464,8 @@
       document.getElementById('watermark-form').reset();
       
       // Resetear tipo de marca de agua
-      document.querySelector('input[name="watermark-type"][value="text"]').checked = true;
+      document.getElementById('watermark-text-enabled').checked = true;
+      document.getElementById('watermark-image-enabled').checked = false;
       toggleWatermarkType();
       
       // Actualizar vista previa
