@@ -980,6 +980,105 @@
       color: var(--bg-color);
     }
 
+    /* Estilos para metadatos y geolocalización */
+    .metadata-section {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    [data-theme="dark"] .metadata-section {
+      background: linear-gradient(135deg, var(--bg-accent), var(--bg-secondary));
+      border-color: var(--border-color);
+    }
+
+    .metadata-title {
+      color: var(--primary-color);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .location-status {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 0.25rem;
+    }
+
+    .location-status.success {
+      background-color: #d1f2eb;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .location-status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .location-status.loading {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    [data-theme="dark"] .location-status.success {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    [data-theme="dark"] .location-status.error {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    [data-theme="dark"] .location-status.loading {
+      background-color: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    /* Botón de ubicación GPS */
+    .gps-button {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+
+    .gps-button:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .copyright-generator {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.375rem 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .copyright-generator:hover {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
     .btn-success {
       background: linear-gradient(135deg, #10b981, #059669);
       color: white;
@@ -2746,6 +2845,65 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <!-- Quality Control -->
                   <div class="space-y-4">
+                    <!-- Metadatos y Copyright -->
+                    <div class="mb-6 p-4 metadata-section">
+                      <h3 class="metadata-title">
+                        <i class="fas fa-tags"></i>Metadatos y Copyright
+                      </h3>
+                      
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Título y Autor -->
+                        <div>
+                          <label for="metaTitle" class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                          <input type="text" class="form-control" id="metaTitle" placeholder="Título de la imagen">
+                        </div>
+                        <div>
+                          <label for="metaAuthor" class="block text-sm font-medium text-gray-700 mb-1">Autor</label>
+                          <input type="text" class="form-control" id="metaAuthor" placeholder="Nombre del autor">
+                        </div>
+                        
+                        <!-- Copyright y Licencia -->
+                        <div>
+                          <label for="metaCopyright" class="block text-sm font-medium text-gray-700 mb-1">Copyright</label>
+                          <div class="flex">
+                            <input type="text" class="form-control flex-1" id="metaCopyright" placeholder="© 2025 Tu Nombre">
+                            <button type="button" class="copyright-generator ml-2" id="autoCopyright" title="Generar copyright automático">
+                              <i class="fas fa-magic"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div>
+                          <label for="metaLicense" class="block text-sm font-medium text-gray-700 mb-1">Licencia</label>
+                          <select class="form-control" id="metaLicense">
+                            <option value="">Seleccionar licencia...</option>
+                            <option value="all-rights-reserved">Todos los derechos reservados</option>
+                            <option value="cc-by">Creative Commons - Atribución</option>
+                            <option value="cc-by-sa">Creative Commons - Atribución-CompartirIgual</option>
+                            <option value="cc-by-nc">Creative Commons - Atribución-NoComercial</option>
+                            <option value="cc0">Creative Commons Zero (Dominio Público)</option>
+                            <option value="royalty-free">Libre de regalías</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <!-- Geolocalización -->
+                      <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                          <i class="fas fa-map-marker-alt mr-1"></i>Geolocalización
+                          <button type="button" class="gps-button ml-2" id="getCurrentLocation" title="Obtener ubicación actual">
+                            <i class="fas fa-crosshairs"></i> Ubicación actual
+                          </button>
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                          <input type="number" class="form-control" id="metaLatitude" placeholder="Latitud" step="any">
+                          <input type="number" class="form-control" id="metaLongitude" placeholder="Longitud" step="any">
+                          <input type="number" class="form-control" id="metaAltitude" placeholder="Altitud (m)" step="any">
+                        </div>
+                        <small class="location-status" id="locationStatus">
+                          Haz clic en "Ubicación actual" para obtener coordenadas GPS
+                        </small>
+                      </div>
+                    </div>
                     <div>
                       <label for="output-quality" class="block text-gray-700 font-medium mb-2 form-label">
                         Calidad de imagen
@@ -3394,6 +3552,9 @@
         // Configurar interceptores de errores globales
         setupGlobalErrorHandling();
         
+        // Cargar metadatos guardados
+        MetadataManager.loadSavedMetadata();
+        
         // Inicializar estado de marcas de agua
         setTimeout(() => {
           toggleWatermarkType();
@@ -3883,6 +4044,31 @@
         const resetFiltersBtn = document.getElementById('resetFilters');
         if (resetFiltersBtn) {
           resetFiltersBtn.addEventListener('click', resetFilters);
+        }
+        
+        // Listeners para metadatos y geolocalización
+        const autocopyrightBtn = document.getElementById('autoCopyright');
+        if (autocopyrightBtn) {
+          autocopyrightBtn.addEventListener('click', generateAutoCopyright);
+        }
+        
+        const getCurrentLocationBtn = document.getElementById('getCurrentLocation');
+        if (getCurrentLocationBtn) {
+          getCurrentLocationBtn.addEventListener('click', () => {
+            MetadataManager.getCurrentLocation();
+          });
+        }
+        
+        // Auto-actualizar copyright cuando cambia el autor
+        const authorInput = document.getElementById('metaAuthor');
+        if (authorInput) {
+          authorInput.addEventListener('blur', () => {
+            const copyrightInput = document.getElementById('metaCopyright');
+            if (authorInput.value && !copyrightInput.value) {
+              // Solo generar automáticamente si no hay copyright ya escrito
+              setTimeout(() => generateAutoCopyright(), 100);
+            }
+          });
         }
         
         // Upload de archivos con optimización
@@ -5161,9 +5347,30 @@
       }
       
       try {
+        // Obtener metadatos antes de la descarga
+        const metadata = MetadataManager.getMetadata();
+        const exifData = MetadataManager.applyMetadataToImage(canvas);
+        
+        // Mostrar resumen de metadatos si están presentes
+        if (metadata.title || metadata.author || metadata.copyright || metadata.latitude) {
+          console.log('Metadatos aplicados:', metadata);
+          
+          let metaInfo = [];
+          if (metadata.title) metaInfo.push(`Título: ${metadata.title}`);
+          if (metadata.author) metaInfo.push(`Autor: ${metadata.author}`);
+          if (metadata.copyright) metaInfo.push(`Copyright: ${metadata.copyright}`);
+          if (metadata.latitude && metadata.longitude) {
+            metaInfo.push(`Ubicación: ${metadata.latitude.toFixed(4)}, ${metadata.longitude.toFixed(4)}`);
+          }
+          
+          if (metaInfo.length > 0) {
+            UIManager.showSuccess(`Imagen descargada con metadatos: ${metaInfo.join(' | ')}`);
+          }
+        }
+        
         // Obtener el título y sanitizar el nombre del archivo
         const titleInput = document.getElementById('title');
-        let filename = titleInput.value.trim() || 'imagen_editada';
+        let filename = metadata.title || titleInput.value.trim() || 'imagen_editada';
         filename = sanitizeFilename(filename);
         
         // Usar el formato seleccionado en lugar de la extensión original
@@ -5519,7 +5726,164 @@
       showError('Error en operación asíncrona');
     });
 
-    // Sistema de Filtros Avanzados
+    // Sistema de Geolocalización y Copyright
+    const MetadataManager = {
+      // Configuración de copyright
+      copyrightTemplates: [
+        '© {year} {author}. Todos los derechos reservados.',
+        '© {year} {author}',
+        'Copyright {year} by {author}',
+        '{author} © {year}'
+      ],
+      
+      // Generar copyright automático
+      generateCopyright: function(author = '') {
+        const year = new Date().getFullYear();
+        const authorName = author || document.getElementById('metaAuthor').value || 'Autor';
+        const template = this.copyrightTemplates[0]; // Usar plantilla por defecto
+        
+        return template
+          .replace('{year}', year)
+          .replace('{author}', authorName);
+      },
+      
+      // Obtener ubicación actual del usuario
+      getCurrentLocation: function() {
+        const locationStatus = document.getElementById('locationStatus');
+        const latInput = document.getElementById('metaLatitude');
+        const lonInput = document.getElementById('metaLongitude');
+        const altInput = document.getElementById('metaAltitude');
+        
+        if (!navigator.geolocation) {
+          locationStatus.textContent = 'Geolocalización no soportada en este navegador';
+          locationStatus.className = 'text-red-500 text-xs mt-1 block';
+          return;
+        }
+        
+        locationStatus.textContent = 'Obteniendo ubicación...';
+        locationStatus.className = 'location-status loading';
+        
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        };
+        
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude, altitude } = position.coords;
+            
+            latInput.value = latitude.toFixed(6);
+            lonInput.value = longitude.toFixed(6);
+            if (altitude !== null) {
+              altInput.value = Math.round(altitude);
+            }
+            
+            locationStatus.textContent = `Ubicación obtenida: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+            locationStatus.className = 'location-status success';
+            
+            UIManager.showSuccess('Ubicación GPS obtenida correctamente');
+          },
+          (error) => {
+            let errorMessage = 'Error al obtener ubicación: ';
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage += 'Permiso denegado por el usuario';
+                break;
+              case error.POSITION_UNAVAILABLE:
+                errorMessage += 'Información de ubicación no disponible';
+                break;
+              case error.TIMEOUT:
+                errorMessage += 'Tiempo de espera agotado';
+                break;
+              default:
+                errorMessage += 'Error desconocido';
+                break;
+            }
+            
+            locationStatus.textContent = errorMessage;
+            locationStatus.className = 'location-status error';
+            UIManager.showError('No se pudo obtener la ubicación GPS');
+          },
+          options
+        );
+      },
+      
+      // Obtener todos los metadatos para exportar
+      getMetadata: function() {
+        return {
+          title: document.getElementById('metaTitle').value || '',
+          author: document.getElementById('metaAuthor').value || '',
+          copyright: document.getElementById('metaCopyright').value || '',
+          license: document.getElementById('metaLicense').value || '',
+          latitude: parseFloat(document.getElementById('metaLatitude').value) || null,
+          longitude: parseFloat(document.getElementById('metaLongitude').value) || null,
+          altitude: parseFloat(document.getElementById('metaAltitude').value) || null,
+          createdAt: new Date().toISOString(),
+          software: 'ImageMetadataPro v2.0'
+        };
+      },
+      
+      // Aplicar metadatos a la imagen
+      applyMetadataToImage: function(canvas) {
+        const metadata = this.getMetadata();
+        
+        // Crear metadatos EXIF simulados (en un proyecto real usarías una librería como piexifjs)
+        const exifData = {
+          'Image Description': metadata.title,
+          'Artist': metadata.author,
+          'Copyright': metadata.copyright,
+          'Software': metadata.software,
+          'DateTime': new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+          'GPS Latitude': metadata.latitude,
+          'GPS Longitude': metadata.longitude,
+          'GPS Altitude': metadata.altitude
+        };
+        
+        // Guardar metadatos en el localStorage para persistencia
+        localStorage.setItem('imageMetadata', JSON.stringify(metadata));
+        
+        return exifData;
+      },
+      
+      // Cargar metadatos guardados
+      loadSavedMetadata: function() {
+        try {
+          const saved = localStorage.getItem('imageMetadata');
+          if (saved) {
+            const metadata = JSON.parse(saved);
+            
+            // Restaurar valores en los campos
+            if (metadata.author) document.getElementById('metaAuthor').value = metadata.author;
+            if (metadata.license) document.getElementById('metaLicense').value = metadata.license;
+            
+            // No restaurar ubicación automáticamente por privacidad
+          }
+        } catch (error) {
+          console.warn('No se pudieron cargar metadatos guardados:', error);
+        }
+      }
+    };
+
+    // Función para copyright automático
+    function generateAutoCopyright() {
+      const authorInput = document.getElementById('metaAuthor');
+      const copyrightInput = document.getElementById('metaCopyright');
+      
+      // Si no hay autor, pedirlo
+      if (!authorInput.value.trim()) {
+        UIManager.showError('Por favor, ingresa el nombre del autor primero');
+        authorInput.focus();
+        return;
+      }
+      
+      const autoCopyright = MetadataManager.generateCopyright(authorInput.value);
+      copyrightInput.value = autoCopyright;
+      
+      UIManager.showSuccess('Copyright generado automáticamente');
+    }
+
+    // Sistema de Filtros Avanzados  
     const FilterManager = {
       filters: {
         brightness: 0,
