@@ -6,6 +6,12 @@
   <title>ImageMetadataPro - Editor de metadatos e imágenes</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- @jsquash libraries for image conversion -->
+  <script src="https://cdn.jsdelivr.net/npm/@jsquash/avif@1.1.0/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@jsquash/png@2.1.0/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@jsquash/jpeg@1.1.0/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@jsquash/webp@1.1.0/index.min.js"></script>
   <style id="app-style">
     /* Theme Variables - Enhanced dark mode support */
     :root {
@@ -3209,16 +3215,17 @@
                         <option value="jpeg">JPEG (.jpg)</option>
                         <option value="png">PNG (.png)</option>
                         <option value="webp">WebP (.webp)</option>
+                        <option value="avif">AVIF (.avif)</option>
                       </select>
                       
                       <!-- Format Info -->
-                      <div id="format-info" class="format-info p-3 bg-blue-50 border border-blue-200 rounded-md">
+                      <div id="format-info" class="format-info p-3 bg-blue-50 border border-blue-200 rounded-md format-jpeg">
                         <div class="flex items-start">
                           <i class="fas fa-info-circle text-blue-600 mt-1 mr-2"></i>
                           <div>
-                            <p class="text-sm font-medium text-blue-800 mb-1">JPEG (.jpg)</p>
-                            <p class="text-xs text-blue-600">Ideal para fotografías, menor tamaño de archivo.</p>
-                            <p class="text-xs text-green-600 mt-1">✓ Compatible con todos los navegadores</p>
+                            <p id="format-title" class="text-sm font-medium text-blue-800 mb-1">JPEG (.jpg)</p>
+                            <p id="format-description" class="text-xs text-blue-600">Ideal para fotografías, menor tamaño de archivo.</p>
+                            <p id="format-compatibility" class="text-xs text-green-600 mt-1">✓ Compatible con todos los navegadores</p>
                           </div>
                         </div>
                       </div>
@@ -3256,10 +3263,14 @@
                   Rehacer
                 </button>
               </div>
-              <div class="flex gap-2">
+              <div class="flex gap-2 flex-wrap">
                 <button id="reset-changes" class="btn btn-primary button--action">
                   <i class="fas fa-refresh" aria-hidden="true"></i>
                   Restablecer
+                </button>
+                <button id="test-conversion" class="btn btn-secondary button--action">
+                  <i class="fas fa-vial" aria-hidden="true"></i>
+                  Test conversión
                 </button>
                 <button id="download-image" class="btn btn-primary button--action">
                   <i class="fas fa-download" aria-hidden="true"></i>
@@ -3603,6 +3614,11 @@
       initializeApp();
       setupFileNaming();
       initializeTheme();
+      
+      // Test format conversion on load
+      setTimeout(() => {
+        testFormatConversion();
+      }, 1000);
     });
 
     // Enhanced utility functions for better code maintainability
@@ -4414,11 +4430,16 @@
         // Action buttons
         const resetChangesBtn = document.getElementById('reset-changes');
         const downloadImageBtn = document.getElementById('download-image');
+        const testConversionBtn = document.getElementById('test-conversion');
         const undoBtn = document.getElementById('undo-btn');
         const redoBtn = document.getElementById('redo-btn');
         
         if (resetChangesBtn) {
           resetChangesBtn.addEventListener('click', resetChanges);
+        }
+        
+        if (testConversionBtn) {
+          testConversionBtn.addEventListener('click', testFormatConversion);
         }
         
         if (downloadImageBtn) {
@@ -4595,10 +4616,11 @@
     function handleFormatChange() {
       const formatSelect = document.getElementById('output-format');
       const formatInfo = document.getElementById('format-info');
+      const formatTitle = document.getElementById('format-title');
       const formatDescription = document.getElementById('format-description');
       const formatCompatibility = document.getElementById('format-compatibility');
       
-      if (!formatSelect || !formatInfo || !formatDescription || !formatCompatibility) return;
+      if (!formatSelect || !formatInfo || !formatTitle || !formatDescription || !formatCompatibility) return;
       
       outputFormat = formatSelect.value;
       
@@ -4608,9 +4630,10 @@
       
       // Update format information
       const formatData = getFormatInfo(outputFormat);
+      formatTitle.textContent = formatData.title;
       formatDescription.textContent = formatData.description;
       formatCompatibility.textContent = formatData.compatibility;
-      formatCompatibility.className = `mt-1 font-medium ${formatData.compatibilityClass}`;
+      formatCompatibility.className = `text-xs mt-1 font-medium ${formatData.compatibilityClass}`;
       
       console.log('Format changed to:', outputFormat);
     }
@@ -4618,23 +4641,27 @@
     function getFormatInfo(format) {
       const formatInfo = {
         jpeg: {
-          description: 'JPEG: Ideal para fotografías, menor tamaño de archivo.',
-          compatibility: 'Compatible con todos los navegadores',
+          title: 'JPEG (.jpg)',
+          description: 'Ideal para fotografías, menor tamaño de archivo.',
+          compatibility: '✓ Compatible con todos los navegadores',
           compatibilityClass: 'text-green-600'
         },
         png: {
-          description: 'PNG: Ideal para imágenes con transparencia, sin pérdida de calidad.',
-          compatibility: 'Compatible con todos los navegadores',
+          title: 'PNG (.png)',
+          description: 'Ideal para imágenes con transparencia, sin pérdida de calidad.',
+          compatibility: '✓ Compatible con todos los navegadores',
           compatibilityClass: 'text-green-600'
         },
         webp: {
-          description: 'WebP: Mejor compresión que JPEG/PNG, menor tamaño de archivo.',
-          compatibility: 'Compatible con navegadores modernos (95%+)',
+          title: 'WebP (.webp)',
+          description: 'Mejor compresión que JPEG/PNG, menor tamaño de archivo.',
+          compatibility: '✓ Compatible con navegadores modernos (95%+)',
           compatibilityClass: 'text-blue-600'
         },
         avif: {
-          description: 'AVIF: Nueva generación, máxima compresión y calidad.',
-          compatibility: 'Compatible con navegadores recientes (80%+)',
+          title: 'AVIF (.avif)',
+          description: 'Nueva generación, máxima compresión y calidad.',
+          compatibility: '⚠ Compatible con navegadores recientes (80%+)',
           compatibilityClass: 'text-orange-600'
         }
       };
@@ -5705,8 +5732,97 @@
       return mimeTypes[format] || 'image/jpeg';
     }
 
-    // Enhanced canvasToBlob function with quality control
+    // Enhanced canvasToBlob function with @jsquash libraries
     async function canvasToBlob(canvas, mimeType, quality = 0.9) {
+      try {
+        // Wait for libraries to load
+        await ensureLibrariesLoaded();
+        
+        // Convert canvas to ImageData for @jsquash processing
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        
+        let outputBuffer;
+        
+        // Use @jsquash libraries for better compression and format support
+        switch (mimeType) {
+          case 'image/avif':
+            if (window.avif) {
+              outputBuffer = await window.avif.encode(imageData, {
+                quality: Math.round(quality * 100),
+                speed: 6 // Good balance between speed and compression
+              });
+            } else {
+              console.warn('AVIF encoder not available, falling back to canvas method');
+              return canvasToBlob_fallback(canvas, mimeType, quality);
+            }
+            break;
+            
+          case 'image/webp':
+            if (window.webp) {
+              outputBuffer = await window.webp.encode(imageData, {
+                quality: Math.round(quality * 100),
+                method: 4 // Good compression method
+              });
+            } else {
+              return canvasToBlob_fallback(canvas, mimeType, quality);
+            }
+            break;
+            
+          case 'image/jpeg':
+            if (window.jpeg) {
+              outputBuffer = await window.jpeg.encode(imageData, {
+                quality: Math.round(quality * 100),
+                baseline: false,
+                arithmetic: false,
+                progressive: true,
+                optimize_coding: true
+              });
+            } else {
+              return canvasToBlob_fallback(canvas, mimeType, quality);
+            }
+            break;
+            
+          case 'image/png':
+            if (window.png) {
+              outputBuffer = await window.png.encode(imageData);
+            } else {
+              return canvasToBlob_fallback(canvas, mimeType, quality);
+            }
+            break;
+            
+          default:
+            return canvasToBlob_fallback(canvas, mimeType, quality);
+        }
+        
+        // Convert buffer to blob
+        return new Blob([outputBuffer], { type: mimeType });
+        
+      } catch (error) {
+        console.error('Error with @jsquash conversion:', error);
+        // Fallback to canvas method
+        return canvasToBlob_fallback(canvas, mimeType, quality);
+      }
+    }
+    
+    // Ensure @jsquash libraries are loaded
+    async function ensureLibrariesLoaded() {
+      const maxRetries = 10;
+      const retryDelay = 100;
+      
+      for (let i = 0; i < maxRetries; i++) {
+        if (window.avif && window.webp && window.jpeg && window.png) {
+          return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
+      
+      console.warn('Some @jsquash libraries may not be fully loaded');
+      return false;
+    }
+    
+    // Fallback function using canvas native methods
+    function canvasToBlob_fallback(canvas, mimeType, quality = 0.9) {
       return new Promise((resolve, reject) => {
         try {
           // For formats that don't support quality, ignore the quality parameter
@@ -5719,6 +5835,96 @@
           reject(error);
         }
       });
+    }
+
+    // Test function to verify format conversion
+    async function testFormatConversion() {
+      console.log('🔧 Testing format conversion capabilities...');
+      UIManager.showLoadingState('Probando conversión de formatos...');
+      
+      try {
+        // Wait for libraries to load
+        await ensureLibrariesLoaded();
+        
+        // Test each @jsquash library availability
+        const testResults = {
+          avif: !!window.avif,
+          webp: !!window.webp, 
+          jpeg: !!window.jpeg,
+          png: !!window.png
+        };
+        
+        console.log('📋 Libraries status:', testResults);
+        
+        // Create test canvas
+        const testCanvas = document.createElement('canvas');
+        testCanvas.width = 100;
+        testCanvas.height = 100;
+        const ctx = testCanvas.getContext('2d');
+        
+        // Draw test pattern
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(0, 0, 50, 50);
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(50, 0, 50, 50);
+        ctx.fillStyle = '#0000ff';
+        ctx.fillRect(0, 50, 50, 50);
+        ctx.fillStyle = '#ffff00';
+        ctx.fillRect(50, 50, 50, 50);
+        
+        // Test conversion to each format
+        const formats = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+        const conversionResults = {};
+        
+        for (const format of formats) {
+          try {
+            const startTime = performance.now();
+            const blob = await canvasToBlob(testCanvas, format, 0.8);
+            const endTime = performance.now();
+            
+            conversionResults[format] = {
+              success: true,
+              size: blob.size,
+              time: Math.round(endTime - startTime),
+              compression: Math.round((blob.size / (100 * 100 * 4)) * 100)
+            };
+            
+            console.log(`✅ ${format}: ${blob.size} bytes (${Math.round(endTime - startTime)}ms)`);
+          } catch (error) {
+            conversionResults[format] = {
+              success: false,
+              error: error.message
+            };
+            console.error(`❌ ${format}: ${error.message}`);
+          }
+        }
+        
+        // Show results in UI
+        const successCount = Object.values(conversionResults).filter(r => r.success).length;
+        const message = Object.entries(conversionResults)
+          .map(([format, result]) => {
+            const formatName = format.split('/')[1].toUpperCase();
+            return result.success 
+              ? `${formatName}: ✅ ${result.size}b (${result.time}ms)`
+              : `${formatName}: ❌ Error`;
+          })
+          .join(' | ');
+          
+        UIManager.hideLoadingState();
+        
+        if (successCount === formats.length) {
+          UIManager.showSuccess(`🎉 Todas las conversiones funcionan: ${message}`);
+        } else {
+          UIManager.showWarning(`⚠️ ${successCount}/${formats.length} conversiones exitosas: ${message}`);
+        }
+        
+        return conversionResults;
+        
+      } catch (error) {
+        UIManager.hideLoadingState();
+        UIManager.showError(`❌ Error en test de conversión: ${error.message}`);
+        console.error('Test conversion error:', error);
+      }
     }
 
     function removeSelectedFile() {
