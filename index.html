@@ -1166,6 +1166,75 @@
       gap: 0.5rem;
     }
 
+    /* Estilos específicos para sección de metadatos */
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .metadata-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metadata-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metadata-field label {
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    [data-theme="dark"] .metadata-field label {
+      color: var(--text-primary);
+    }
+
+    /* Mejoras para botón de copyright en sección 2 */
+    .copyright-input-group {
+      display: flex;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .copyright-input-group input {
+      border-radius: 0 !important;
+      border-right: none !important;
+    }
+
+    .copyright-input-group .copyright-generator {
+      border-radius: 0 !important;
+      border-left: none !important;
+    }
+
+    /* Estado del GPS mejorado */
+    .gps-status {
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      transition: all 0.3s ease;
+    }
+
+    /* Grid de geolocalización */
+    .geo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .geo-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+    }
+
     .btn-success {
       background: linear-gradient(135deg, #10b981, #059669);
       color: white;
@@ -2560,7 +2629,7 @@
                    tabindex="0"
                    aria-expanded="true"
                    aria-controls="metadata-content">
-                <h2 class="text-xl font-semibold">2. Editar metadatos</h2>
+                <h2 class="text-xl font-semibold">2. Metadatos y Copyright</h2>
                 <i class="fas fa-chevron-down section__icon" aria-hidden="true"></i>
               </div>
               <div id="metadata-content"
@@ -2568,6 +2637,75 @@
                    aria-hidden="false">
                 <div class="section__inner">
                   <form id="metadata-form">
+                  <!-- Metadatos básicos -->
+                  <div class="metadata-grid">
+                    <div class="metadata-field">
+                      <label for="metaTitle">Título</label>
+                      <input type="text" id="metaTitle" name="metaTitle"
+                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+                             placeholder="Título de la imagen">
+                    </div>
+                    <div class="metadata-field">
+                      <label for="metaAuthor">Autor</label>
+                      <input type="text" id="metaAuthor" name="metaAuthor"
+                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+                             placeholder="Nombre del autor">
+                    </div>
+                  </div>
+                  
+                  <!-- Copyright y Licencia -->
+                  <div class="metadata-grid">
+                    <div class="metadata-field">
+                      <label for="metaCopyright">Copyright</label>
+                      <div class="copyright-input-group">
+                        <input type="text" id="metaCopyright" name="metaCopyright"
+                               class="flex-1 px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+                               placeholder="© 2025 Tu Nombre">
+                        <button type="button" class="copyright-generator border border-gray-300 px-3" id="autoCopyright" title="Generar copyright automático">
+                          <i class="fas fa-magic"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="metadata-field">
+                      <label for="metaLicense">Licencia</label>
+                      <select id="metaLicense" name="metaLicense"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                        <option value="">Seleccionar licencia...</option>
+                        <option value="all-rights-reserved">Todos los derechos reservados</option>
+                        <option value="cc-by">Creative Commons - Atribución</option>
+                        <option value="cc-by-sa">Creative Commons - Atribución-CompartirIgual</option>
+                        <option value="cc-by-nc">Creative Commons - Atribución-NoComercial</option>
+                        <option value="cc0">Creative Commons Zero (Dominio Público)</option>
+                        <option value="royalty-free">Libre de regalías</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <!-- Geolocalización -->
+                  <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2 form-label">
+                      <i class="fas fa-map-marker-alt mr-1"></i>Geolocalización
+                      <button type="button" class="gps-button ml-2" id="getCurrentLocation" title="Obtener ubicación actual">
+                        <i class="fas fa-crosshairs"></i> Ubicación actual
+                      </button>
+                    </label>
+                    <div class="geo-grid">
+                      <input type="number" id="metaLatitude" name="metaLatitude"
+                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+                             placeholder="Latitud" step="any">
+                      <input type="number" id="metaLongitude" name="metaLongitude"
+                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+                             placeholder="Longitud" step="any">
+                      <input type="number" id="metaAltitude" name="metaAltitude"
+                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+                             placeholder="Altitud (m)" step="any">
+                    </div>
+                    <small class="location-status gps-status" id="locationStatus">
+                      Haz clic en "Ubicación actual" para obtener coordenadas GPS
+                    </small>
+                  </div>
+                  
+                  <!-- Descripción y palabras clave -->
                   <div class="mb-4">
                     <label for="description" class="block text-gray-700 font-medium mb-2 form-label">Descripción</label>
                     <textarea id="description" name="description" rows="3"
@@ -2602,6 +2740,26 @@
                       </button>
                     </div>
                     <div class="space-y-2 text-sm">
+                      <div id="preview-title" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Título:</span>
+                        <span class="text-gray-800 ml-2" id="preview-title-value"></span>
+                      </div>
+                      <div id="preview-author" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Autor:</span>
+                        <span class="text-gray-800 ml-2" id="preview-author-value"></span>
+                      </div>
+                      <div id="preview-copyright" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Copyright:</span>
+                        <span class="text-gray-800 ml-2" id="preview-copyright-value"></span>
+                      </div>
+                      <div id="preview-license" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Licencia:</span>
+                        <span class="text-gray-800 ml-2" id="preview-license-value"></span>
+                      </div>
+                      <div id="preview-location" class="preview-field--hidden">
+                        <span class="font-medium text-gray-600">Ubicación:</span>
+                        <span class="text-gray-800 ml-2" id="preview-location-value"></span>
+                      </div>
                       <div id="preview-description" class="preview-field--hidden">
                         <span class="font-medium text-gray-600">Descripción:</span>
                         <span class="text-gray-800 ml-2" id="preview-description-value"></span>
@@ -2903,66 +3061,6 @@
                  aria-hidden="false">
               <div class="section__inner">
                 <div class="grid grid-cols-1 gap-6">
-                  <!-- Metadatos Completos -->
-                  <div class="metadata-section">
-                    <h3 class="metadata-title">
-                      <i class="fas fa-tags"></i>Metadatos y Copyright
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <!-- Título y Autor -->
-                      <div>
-                        <label for="metaTitle" class="block text-sm font-medium text-gray-700 mb-1">Título</label>
-                        <input type="text" class="form-control" id="metaTitle" placeholder="Título de la imagen">
-                      </div>
-                      <div>
-                        <label for="metaAuthor" class="block text-sm font-medium text-gray-700 mb-1">Autor</label>
-                        <input type="text" class="form-control" id="metaAuthor" placeholder="Nombre del autor">
-                      </div>
-                      
-                      <!-- Copyright y Licencia -->
-                      <div>
-                        <label for="metaCopyright" class="block text-sm font-medium text-gray-700 mb-1">Copyright</label>
-                        <div class="flex">
-                          <input type="text" class="form-control flex-1" id="metaCopyright" placeholder="© 2025 Tu Nombre">
-                          <button type="button" class="copyright-generator ml-2" id="autoCopyright" title="Generar copyright automático">
-                            <i class="fas fa-magic"></i>
-                          </button>
-                        </div>
-                      </div>
-                      <div>
-                        <label for="metaLicense" class="block text-sm font-medium text-gray-700 mb-1">Licencia</label>
-                        <select class="form-control" id="metaLicense">
-                          <option value="">Seleccionar licencia...</option>
-                          <option value="all-rights-reserved">Todos los derechos reservados</option>
-                          <option value="cc-by">Creative Commons - Atribución</option>
-                          <option value="cc-by-sa">Creative Commons - Atribución-CompartirIgual</option>
-                          <option value="cc-by-nc">Creative Commons - Atribución-NoComercial</option>
-                          <option value="cc0">Creative Commons Zero (Dominio Público)</option>
-                          <option value="royalty-free">Libre de regalías</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <!-- Geolocalización -->
-                    <div class="mt-4">
-                      <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-map-marker-alt mr-1"></i>Geolocalización
-                        <button type="button" class="gps-button ml-2" id="getCurrentLocation" title="Obtener ubicación actual">
-                          <i class="fas fa-crosshairs"></i> Ubicación actual
-                        </button>
-                      </label>
-                      <div class="grid grid-cols-3 gap-2">
-                        <input type="number" class="form-control" id="metaLatitude" placeholder="Latitud" step="any">
-                        <input type="number" class="form-control" id="metaLongitude" placeholder="Longitud" step="any">
-                        <input type="number" class="form-control" id="metaAltitude" placeholder="Altitud (m)" step="any">
-                      </div>
-                      <small class="location-status" id="locationStatus">
-                        Haz clic en "Ubicación actual" para obtener coordenadas GPS
-                      </small>
-                    </div>
-                  </div>
-                  
                   <!-- Configuración de Calidad y Formato -->
                   <div class="config-grid">
                     <!-- Quality Control -->
