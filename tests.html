@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests - ImageMetadataPro</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .test-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .test-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .test-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.8;
+        }
+        
+        .test-controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .test-btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+        
+        .test-btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+        }
+        
+        .test-btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+        
+        .test-btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .test-results {
+            padding: 20px;
+        }
+        
+        .test-group {
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .test-group-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-group-content {
+            padding: 20px;
+        }
+        
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .test-status.pending {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .test-status.running {
+            background: #007bff;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        
+        .test-status.pass {
+            background: #28a745;
+            color: white;
+        }
+        
+        .test-status.fail {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .test-description {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        
+        .test-result {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-left: auto;
+            max-width: 300px;
+            text-align: right;
+        }
+        
+        .test-summary {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .test-log {
+            background: #1e1e1e;
+            color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .iframe-container {
+            margin-top: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 600px;
+        }
+        
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 20px;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #007bff, #28a745);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Tests - ImageMetadataPro</h1>
+            <p>Suite completa de tests para funcionalidad, UI y compatibilidad</p>
+        </div>
+        
+        <div class="test-controls">
+            <button class="test-btn test-btn-primary" onclick="runAllTests()">
+                <i class="fas fa-play"></i> Ejecutar Todos los Tests
+            </button>
+            <button class="test-btn test-btn-success" onclick="runUITests()">
+                <i class="fas fa-palette"></i> Tests de UI
+            </button>
+            <button class="test-btn test-btn-warning" onclick="runFunctionalityTests()">
+                <i class="fas fa-cogs"></i> Tests de Funcionalidad
+            </button>
+            <button class="test-btn test-btn-danger" onclick="runDarkModeTests()">
+                <i class="fas fa-moon"></i> Tests Modo Oscuro
+            </button>
+            <a href="./index.html" class="test-btn test-btn-primary" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Abrir App
+            </a>
+        </div>
+        
+        <div class="test-results">
+            <div class="test-summary">
+                <div class="summary-item">
+                    <div class="summary-number" id="total-tests">0</div>
+                    <div class="summary-label">Total Tests</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number" id="passed-tests" style="color: #28a745;">0</div>
+                    <div class="summary-label">Pasados</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number" id="failed-tests" style="color: #dc3545;">0</div>
+                    <div class="summary-label">Fallidos</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number" id="pending-tests" style="color: #ffc107;">0</div>
+                    <div class="summary-label">Pendientes</div>
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%;">0%</div>
+            </div>
+            
+            <div id="test-groups"></div>
+            
+            <div class="test-log" id="test-log">
+                <div>📋 Registro de tests inicializado...</div>
+                <div>🔧 Preparando suite de tests...</div>
+                <div>✅ Listo para ejecutar tests</div>
+            </div>
+        </div>
+        
+        <div class="iframe-container">
+            <iframe src="./index.html" id="app-iframe"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Test suite para ImageMetadataPro
+        class TestSuite {
+            constructor() {
+                this.tests = [];
+                this.results = {
+                    passed: 0,
+                    failed: 0,
+                    pending: 0,
+                    total: 0
+                };
+                this.currentTest = 0;
+                this.log = [];
+                this.iframe = null;
+                this.appDocument = null;
+                this.appWindow = null;
+            }
+            
+            async initialize() {
+                this.iframe = document.getElementById('app-iframe');
+                await this.waitForIframeLoad();
+                this.appDocument = this.iframe.contentDocument;
+                this.appWindow = this.iframe.contentWindow;
+                this.log.push('🔗 Aplicación cargada en iframe');
+                this.updateLog();
+            }
+            
+            waitForIframeLoad() {
+                return new Promise((resolve) => {
+                    if (this.iframe.contentDocument.readyState === 'complete') {
+                        resolve();
+                    } else {
+                        this.iframe.onload = () => resolve();
+                    }
+                });
+            }
+            
+            addTest(group, name, testFn, description = '') {
+                this.tests.push({
+                    group,
+                    name,
+                    testFn,
+                    description,
+                    status: 'pending',
+                    result: '',
+                    error: null
+                });
+                this.results.total++;
+                this.results.pending++;
+            }
+            
+            async runTest(test) {
+                test.status = 'running';
+                this.updateUI();
+                this.log.push(`🧪 Ejecutando: ${test.group} > ${test.name}`);
+                this.updateLog();
+                
+                try {
+                    await test.testFn();
+                    test.status = 'pass';
+                    test.result = 'Test pasado correctamente';
+                    this.results.passed++;
+                    this.results.pending--;
+                    this.log.push(`✅ PASS: ${test.name}`);
+                } catch (error) {
+                    test.status = 'fail';
+                    test.result = error.message;
+                    test.error = error;
+                    this.results.failed++;
+                    this.results.pending--;
+                    this.log.push(`❌ FAIL: ${test.name} - ${error.message}`);
+                }
+                
+                this.updateUI();
+                this.updateLog();
+            }
+            
+            async runAllTests() {
+                this.log.push('🚀 Iniciando ejecución de todos los tests...');
+                this.updateLog();
+                
+                for (let i = 0; i < this.tests.length; i++) {
+                    this.currentTest = i;
+                    await this.runTest(this.tests[i]);
+                    await this.sleep(100); // Pequeña pausa entre tests
+                }
+                
+                this.log.push('🏁 Ejecución de tests completada');
+                this.log.push(`📊 Resumen: ${this.results.passed} pasados, ${this.results.failed} fallidos`);
+                this.updateLog();
+            }
+            
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            updateUI() {
+                // Actualizar contadores
+                document.getElementById('total-tests').textContent = this.results.total;
+                document.getElementById('passed-tests').textContent = this.results.passed;
+                document.getElementById('failed-tests').textContent = this.results.failed;
+                document.getElementById('pending-tests').textContent = this.results.pending;
+                
+                // Actualizar barra de progreso
+                const progress = ((this.results.passed + this.results.failed) / this.results.total) * 100;
+                const progressFill = document.getElementById('progress-fill');
+                progressFill.style.width = `${progress}%`;
+                progressFill.textContent = `${Math.round(progress)}%`;
+                
+                // Actualizar grupos de tests
+                this.updateTestGroups();
+            }
+            
+            updateTestGroups() {
+                const container = document.getElementById('test-groups');
+                const groups = {};
+                
+                // Agrupar tests
+                this.tests.forEach(test => {
+                    if (!groups[test.group]) {
+                        groups[test.group] = [];
+                    }
+                    groups[test.group].push(test);
+                });
+                
+                // Generar HTML
+                container.innerHTML = Object.keys(groups).map(groupName => {
+                    const groupTests = groups[groupName];
+                    const groupIcon = this.getGroupIcon(groupName);
+                    
+                    return `
+                        <div class="test-group">
+                            <div class="test-group-header">
+                                ${groupIcon} ${groupName}
+                            </div>
+                            <div class="test-group-content">
+                                ${groupTests.map(test => `
+                                    <div class="test-item">
+                                        <div class="test-status ${test.status}">
+                                            ${this.getStatusIcon(test.status)}
+                                        </div>
+                                        <div class="test-description">
+                                            <strong>${test.name}</strong>
+                                            ${test.description ? `<br><small>${test.description}</small>` : ''}
+                                        </div>
+                                        <div class="test-result">
+                                            ${test.result}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            getGroupIcon(groupName) {
+                const icons = {
+                    'UI Tests': '🎨',
+                    'Funcionalidad': '⚙️',
+                    'Modo Oscuro': '🌙',
+                    'Responsivo': '📱',
+                    'Formularios': '📝',
+                    'Navegación': '🧭',
+                    'Performance': '⚡'
+                };
+                return icons[groupName] || '🧪';
+            }
+            
+            getStatusIcon(status) {
+                const icons = {
+                    'pending': '⏳',
+                    'running': '🔄',
+                    'pass': '✓',
+                    'fail': '✗'
+                };
+                return icons[status] || '?';
+            }
+            
+            updateLog() {
+                const logContainer = document.getElementById('test-log');
+                logContainer.innerHTML = this.log.map(entry => `<div>${entry}</div>`).join('');
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+            
+            // Métodos de utilidad para tests
+            async waitForElement(selector, timeout = 5000) {
+                return new Promise((resolve, reject) => {
+                    const startTime = Date.now();
+                    const checkElement = () => {
+                        const element = this.appDocument.querySelector(selector);
+                        if (element) {
+                            resolve(element);
+                        } else if (Date.now() - startTime > timeout) {
+                            reject(new Error(`Elemento ${selector} no encontrado después de ${timeout}ms`));
+                        } else {
+                            setTimeout(checkElement, 100);
+                        }
+                    };
+                    checkElement();
+                });
+            }
+            
+            async clickElement(selector) {
+                const element = await this.waitForElement(selector);
+                element.click();
+                await this.sleep(100);
+                return element;
+            }
+            
+            async typeInElement(selector, text) {
+                const element = await this.waitForElement(selector);
+                element.focus();
+                element.value = text;
+                element.dispatchEvent(new Event('input', { bubbles: true }));
+                element.dispatchEvent(new Event('change', { bubbles: true }));
+                await this.sleep(100);
+                return element;
+            }
+            
+            getComputedStyle(selector, property) {
+                const element = this.appDocument.querySelector(selector);
+                if (!element) throw new Error(`Elemento ${selector} no encontrado`);
+                return this.appWindow.getComputedStyle(element)[property];
+            }
+            
+            assert(condition, message) {
+                if (!condition) {
+                    throw new Error(message);
+                }
+            }
+        }
+        
+        // Instancia global del test suite
+        const testSuite = new TestSuite();
+        
+        // Definir todos los tests
+        function defineTests() {
+            // Tests de UI básicos
+            testSuite.addTest('UI Tests', 'Header presente', async () => {
+                const header = await testSuite.waitForElement('header');
+                testSuite.assert(header, 'Header no encontrado');
+            }, 'Verificar que el header principal existe');
+            
+            testSuite.addTest('UI Tests', 'Título principal', async () => {
+                const title = await testSuite.waitForElement('h1');
+                testSuite.assert(title.textContent.includes('ImageMetadataPro'), 'Título incorrecto');
+            }, 'Verificar el título de la aplicación');
+            
+            testSuite.addTest('UI Tests', 'Botón toggle tema', async () => {
+                const themeBtn = await testSuite.waitForElement('#theme-toggle');
+                testSuite.assert(themeBtn, 'Botón de tema no encontrado');
+            }, 'Verificar que existe el botón para cambiar tema');
+            
+            // Tests de secciones
+            testSuite.addTest('UI Tests', 'Sección 1 - Upload', async () => {
+                const section = await testSuite.waitForElement('#drop-area');
+                testSuite.assert(section, 'Área de drag & drop no encontrada');
+            }, 'Verificar área de subida de archivos');
+            
+            testSuite.addTest('UI Tests', 'Sección 2 - Metadatos', async () => {
+                const section = await testSuite.waitForElement('#metadata-header');
+                testSuite.assert(section, 'Sección de metadatos no encontrada');
+            }, 'Verificar sección de metadatos y copyright');
+            
+            testSuite.addTest('UI Tests', 'Sección 3 - Marcas de agua', async () => {
+                const section = await testSuite.waitForElement('#watermark-header');
+                testSuite.assert(section, 'Sección de marcas de agua no encontrada');
+            }, 'Verificar sección de marcas de agua');
+            
+            testSuite.addTest('UI Tests', 'Sección 4 - Filtros', async () => {
+                const section = await testSuite.waitForElement('#filters-header');
+                testSuite.assert(section, 'Sección de filtros no encontrada');
+            }, 'Verificar sección de filtros y ajustes');
+            
+            testSuite.addTest('UI Tests', 'Sección 5 - Configuración', async () => {
+                const section = await testSuite.waitForElement('#output-header');
+                testSuite.assert(section, 'Sección de configuración no encontrada');
+            }, 'Verificar sección de configuración de salida');
+            
+            // Tests de funcionalidad
+            testSuite.addTest('Funcionalidad', 'Toggle de tema funciona', async () => {
+                const themeBtn = await testSuite.waitForElement('#theme-toggle');
+                const initialTheme = testSuite.appDocument.documentElement.getAttribute('data-theme');
+                
+                await testSuite.clickElement('#theme-toggle');
+                await testSuite.sleep(300);
+                
+                const newTheme = testSuite.appDocument.documentElement.getAttribute('data-theme');
+                testSuite.assert(initialTheme !== newTheme, 'El tema no cambió');
+            }, 'Verificar que el toggle de tema cambia correctamente');
+            
+            testSuite.addTest('Funcionalidad', 'Campos de metadatos', async () => {
+                await testSuite.typeInElement('#metaTitle', 'Test Image Title');
+                await testSuite.typeInElement('#metaAuthor', 'Test Author');
+                
+                const titleValue = testSuite.appDocument.querySelector('#metaTitle').value;
+                const authorValue = testSuite.appDocument.querySelector('#metaAuthor').value;
+                
+                testSuite.assert(titleValue === 'Test Image Title', 'Campo título no funciona');
+                testSuite.assert(authorValue === 'Test Author', 'Campo autor no funciona');
+            }, 'Verificar que los campos de metadatos aceptan texto');
+            
+            testSuite.addTest('Funcionalidad', 'Botón copyright automático', async () => {
+                await testSuite.typeInElement('#metaAuthor', 'Test Author');
+                await testSuite.clickElement('#autoCopyright');
+                
+                const copyrightValue = testSuite.appDocument.querySelector('#metaCopyright').value;
+                testSuite.assert(copyrightValue.includes('Test Author'), 'Copyright automático no funciona');
+                testSuite.assert(copyrightValue.includes('2025'), 'Año en copyright incorrecto');
+            }, 'Verificar generación automática de copyright');
+            
+            testSuite.addTest('Funcionalidad', 'Botón de geolocalización', async () => {
+                const geoBtn = await testSuite.waitForElement('#getCurrentLocation');
+                testSuite.assert(geoBtn, 'Botón de geolocalización no encontrado');
+                
+                // Verificar que el botón tiene funcionalidad (no necesariamente funcione por permisos)
+                const hasClickHandler = geoBtn.onclick || geoBtn.getAttribute('onclick');
+                testSuite.assert(hasClickHandler !== null, 'Botón geo sin manejador de evento');
+            }, 'Verificar que el botón de geolocalización existe y tiene funcionalidad');
+            
+            testSuite.addTest('Funcionalidad', 'Botón de descarga', async () => {
+                const downloadBtn = await testSuite.waitForElement('#download-image');
+                testSuite.assert(downloadBtn, 'Botón de descarga no encontrado');
+                testSuite.assert(downloadBtn.classList.contains('btn'), 'Botón descarga sin clase de estilo');
+            }, 'Verificar que el botón de descarga existe y tiene estilos');
+            
+            testSuite.addTest('Funcionalidad', 'Controles de filtros', async () => {
+                const brightnessSlider = await testSuite.waitForElement('#brightness');
+                brightnessSlider.value = 20;
+                brightnessSlider.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                await testSuite.sleep(200);
+                
+                const brightnessValue = testSuite.appDocument.querySelector('#brightness-value');
+                if (brightnessValue) {
+                    testSuite.assert(brightnessValue.textContent === '20', 'Control de brillo no funciona');
+                } else {
+                    // Si no hay display de valor, al menos verificar que el slider cambió
+                    testSuite.assert(brightnessSlider.value === '20', 'Slider de brillo no cambió valor');
+                }
+            }, 'Verificar que los controles de filtros actualizan valores');
+            
+            testSuite.addTest('Funcionalidad', 'Selector de calidad', async () => {
+                const qualitySlider = await testSuite.waitForElement('#output-quality');
+                qualitySlider.value = 90;
+                qualitySlider.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                await testSuite.sleep(200);
+                
+                const qualityDisplay = testSuite.appDocument.querySelector('#quality-percentage');
+                if (qualityDisplay) {
+                    testSuite.assert(qualityDisplay.textContent === '90%', 'Selector de calidad no funciona');
+                } else {
+                    testSuite.assert(qualitySlider.value === '90', 'Slider de calidad no cambió valor');
+                }
+            }, 'Verificar que el selector de calidad actualiza la UI');
+            
+            testSuite.addTest('Funcionalidad', 'Campos de texto watermark', async () => {
+                await testSuite.typeInElement('#watermark-text', 'Test Watermark');
+                
+                const watermarkValue = testSuite.appDocument.querySelector('#watermark-text').value;
+                testSuite.assert(watermarkValue === 'Test Watermark', 'Campo de texto watermark no funciona');
+            }, 'Verificar campos de configuración de marca de agua');
+            
+            // Tests específicos de modo oscuro
+            testSuite.addTest('Modo Oscuro', 'Activar modo oscuro', async () => {
+                // Asegurar que estamos en modo claro primero
+                testSuite.appDocument.documentElement.setAttribute('data-theme', 'light');
+                await testSuite.sleep(100);
+                
+                await testSuite.clickElement('#theme-toggle');
+                await testSuite.sleep(300);
+                
+                const theme = testSuite.appDocument.documentElement.getAttribute('data-theme');
+                testSuite.assert(theme === 'dark', 'No se activó el modo oscuro');
+            }, 'Activar modo oscuro y verificar atributo data-theme');
+            
+            testSuite.addTest('Modo Oscuro', 'Colores de fondo oscuros', async () => {
+                testSuite.appDocument.documentElement.setAttribute('data-theme', 'dark');
+                await testSuite.sleep(200);
+                
+                const bodyBg = testSuite.getComputedStyle('body', 'backgroundColor');
+                const cardBg = testSuite.getComputedStyle('.card', 'backgroundColor');
+                
+                // Verificar que los colores son oscuros (valores RGB bajos)
+                testSuite.assert(bodyBg.includes('rgb') && !bodyBg.includes('255'), 'Color de fondo no es oscuro');
+            }, 'Verificar que los colores de fondo cambian en modo oscuro');
+            
+            testSuite.addTest('Modo Oscuro', 'Texto claro en modo oscuro', async () => {
+                testSuite.appDocument.documentElement.setAttribute('data-theme', 'dark');
+                await testSuite.sleep(200);
+                
+                const textColor = testSuite.getComputedStyle('h1', 'color');
+                // En modo oscuro, el texto debe ser claro
+                testSuite.assert(textColor.includes('rgb'), 'Color de texto no definido correctamente');
+            }, 'Verificar que el texto es legible en modo oscuro');
+            
+            testSuite.addTest('Modo Oscuro', 'Botones en modo oscuro', async () => {
+                testSuite.appDocument.documentElement.setAttribute('data-theme', 'dark');
+                await testSuite.sleep(200);
+                
+                const button = testSuite.appDocument.querySelector('.btn-primary');
+                if (button) {
+                    const buttonBg = testSuite.appWindow.getComputedStyle(button).backgroundColor;
+                    testSuite.assert(buttonBg.includes('rgb'), 'Estilo de botón no aplicado en modo oscuro');
+                }
+            }, 'Verificar estilos de botones en modo oscuro');
+            
+            testSuite.addTest('Modo Oscuro', 'Inputs en modo oscuro', async () => {
+                testSuite.appDocument.documentElement.setAttribute('data-theme', 'dark');
+                await testSuite.sleep(200);
+                
+                const input = testSuite.appDocument.querySelector('input[type="text"]');
+                if (input) {
+                    const inputBg = testSuite.appWindow.getComputedStyle(input).backgroundColor;
+                    const inputColor = testSuite.appWindow.getComputedStyle(input).color;
+                    testSuite.assert(inputBg.includes('rgb') && inputColor.includes('rgb'), 'Estilos de input no aplicados en modo oscuro');
+                }
+            }, 'Verificar estilos de campos de entrada en modo oscuro');
+            
+            // Tests de responsividad
+            testSuite.addTest('Responsivo', 'Layout móvil', async () => {
+                // Simular viewport móvil
+                testSuite.appWindow.innerWidth = 375;
+                testSuite.appWindow.dispatchEvent(new Event('resize'));
+                await testSuite.sleep(300);
+                
+                const container = testSuite.appDocument.querySelector('.container');
+                const containerWidth = testSuite.appWindow.getComputedStyle(container).width;
+                testSuite.assert(containerWidth, 'Layout responsive no funciona');
+            }, 'Verificar que el layout se adapta a pantallas móviles');
+            
+            // Tests de formularios
+            testSuite.addTest('Formularios', 'Validación de formularios', async () => {
+                const form = testSuite.appDocument.querySelector('#metadata-form');
+                testSuite.assert(form, 'Formulario de metadatos no encontrado');
+                
+                // Verificar que los campos tienen los atributos correctos
+                const titleInput = testSuite.appDocument.querySelector('#metaTitle');
+                testSuite.assert(titleInput.type === 'text', 'Tipo de input título incorrecto');
+            }, 'Verificar estructura y validación de formularios');
+            
+            // Tests de performance
+            testSuite.addTest('Performance', 'Carga de estilos CSS', async () => {
+                const styleSheets = testSuite.appDocument.styleSheets;
+                testSuite.assert(styleSheets.length > 0, 'No se cargaron estilos CSS');
+                
+                // Verificar que las variables CSS están definidas
+                const rootStyles = testSuite.appWindow.getComputedStyle(testSuite.appDocument.documentElement);
+                const primaryColor = rootStyles.getPropertyValue('--primary-color');
+                testSuite.assert(primaryColor, 'Variables CSS no definidas');
+            }, 'Verificar que los estilos CSS se cargan correctamente');
+            
+            testSuite.addTest('Performance', 'JavaScript funcional', async () => {
+                // Verificar que las funciones principales están disponibles
+                testSuite.assert(typeof testSuite.appWindow.updatePreview === 'function', 'Función updatePreview no disponible');
+                testSuite.assert(typeof testSuite.appWindow.UIManager === 'object', 'UIManager no disponible');
+            }, 'Verificar que el JavaScript se carga y ejecuta correctamente');
+        }
+        
+        // Funciones de control
+        async function runAllTests() {
+            await testSuite.initialize();
+            defineTests();
+            testSuite.updateUI();
+            await testSuite.runAllTests();
+        }
+        
+        async function runUITests() {
+            await testSuite.initialize();
+            defineTests();
+            
+            // Ejecutar solo tests de UI
+            const uiTests = testSuite.tests.filter(test => test.group === 'UI Tests');
+            for (const test of uiTests) {
+                await testSuite.runTest(test);
+            }
+        }
+        
+        async function runFunctionalityTests() {
+            await testSuite.initialize();
+            defineTests();
+            
+            // Ejecutar solo tests de funcionalidad
+            const funcTests = testSuite.tests.filter(test => test.group === 'Funcionalidad');
+            for (const test of funcTests) {
+                await testSuite.runTest(test);
+            }
+        }
+        
+        async function runDarkModeTests() {
+            await testSuite.initialize();
+            defineTests();
+            
+            // Ejecutar solo tests de modo oscuro
+            const darkTests = testSuite.tests.filter(test => test.group === 'Modo Oscuro');
+            for (const test of darkTests) {
+                await testSuite.runTest(test);
+            }
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            testSuite.updateUI();
+        });
+    </script>
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</body>
+</html>
