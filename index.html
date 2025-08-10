@@ -775,9 +775,11 @@
       text-transform: uppercase;
     }
 
-    /* Mantener placeholders en texto normal */
+    /* Placeholders en mayúsculas */
     input::placeholder,
-    textarea::placeholder,
+    textarea::placeholder {
+      text-transform: uppercase;
+    }
     select option {
       text-transform: none !important;
     }
