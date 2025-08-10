@@ -3939,8 +3939,18 @@
     }
 
     function setupFileNaming() {
-      const titleInput = document.getElementById('title');
+      const titleInput = document.getElementById('metaTitle');
       const fileInput = document.getElementById('file-input');
+
+      // Agregar funcionalidad para seleccionar todo el texto al hacer clic
+      titleInput.addEventListener('click', function() {
+        this.select();
+      });
+
+      // También seleccionar todo al recibir foco (tabulación)
+      titleInput.addEventListener('focus', function() {
+        this.select();
+      });
 
       // Cuando se selecciona un archivo
       fileInput.addEventListener('change', function(e) {
@@ -3948,9 +3958,16 @@
           currentFile = e.target.files[0];
           // Guardar la extensión original del archivo
           originalExtension = currentFile.name.split('.').pop().toLowerCase();
+          
+          // Obtener el nombre del archivo sin extensión
+          const fileNameWithoutExtension = currentFile.name.replace(/\.[^/.]+$/, "");
+          
+          // Actualizar el placeholder del campo título
+          titleInput.placeholder = fileNameWithoutExtension;
+          
           // Establecer el título inicial como el nombre del archivo (sin extensión)
           if (!titleInput.value.trim()) {
-            titleInput.value = currentFile.name.replace(/\.[^/.]+$/, "");
+            titleInput.value = fileNameWithoutExtension;
           }
         }
       });
@@ -4779,10 +4796,11 @@
           }
           
           // Establecer título inicial si está vacío
-          const titleInput = document.getElementById('title');
+          const titleInput = document.getElementById('metaTitle');
           if (titleInput && !titleInput.value.trim()) {
             const nameWithoutExt = sanitizedFileName.replace(/\.[^/.]+$/, "");
             titleInput.value = SecurityManager.sanitizeText(nameWithoutExt);
+            titleInput.placeholder = nameWithoutExt;
           }
           
           // Mostrar editor
@@ -5529,7 +5547,7 @@
         }
         
         // Obtener el título y sanitizar el nombre del archivo
-        const titleInput = document.getElementById('title');
+        const titleInput = document.getElementById('metaTitle');
         let filename = metadata.title || titleInput.value.trim() || 'imagen_editada';
         filename = sanitizeFilename(filename);
         
