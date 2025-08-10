@@ -912,6 +912,74 @@
       color: var(--accent-primary);
     }
 
+    /* Estilos específicos para sistema de filtros */
+    .filter-control {
+      margin-bottom: 1rem;
+    }
+
+    .filter-control label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .filter-range {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-value {
+      color: var(--primary-color);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .filter-preset {
+      margin: 0.25rem;
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--primary-color);
+      background-color: transparent;
+      color: var(--primary-color);
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .filter-preset:hover {
+      background-color: var(--primary-color);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .filter-preset.btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .filter-presets {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Tema oscuro para filtros */
+    [data-theme="dark"] .filter-preset {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    [data-theme="dark"] .filter-preset:hover {
+      background-color: var(--accent-primary);
+      color: var(--bg-color);
+    }
+
     .btn-success {
       background: linear-gradient(135deg, #10b981, #059669);
       color: white;
@@ -2565,6 +2633,100 @@
           </section>
         </div>
 
+        <!-- Filters Section -->
+        <section class="mb-8">
+          <div class="bg-white rounded-lg shadow-md p-6 card">
+            <div id="filters-header"
+                 class="section__header"
+                 role="button"
+                 tabindex="0"
+                 aria-expanded="true"
+                 aria-controls="filters-content">
+              <h2 class="text-xl font-semibold">4. Filtros y Ajustes</h2>
+              <i class="fas fa-chevron-down section__icon" aria-hidden="true"></i>
+            </div>
+            <div id="filters-content"
+                 class="section__content section__content--open"
+                 aria-hidden="false">
+              <div class="section__inner">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Ajustes Básicos -->
+                  <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-800">Ajustes Básicos</h3>
+                    
+                    <div class="space-y-3">
+                      <div>
+                        <label for="brightness" class="block text-gray-700 font-medium mb-2 form-label">
+                          Brillo: <span id="brightness-value">0</span>
+                        </label>
+                        <input type="range" id="brightness" name="brightness" min="-100" max="100" value="0" 
+                               class="w-full slider">
+                      </div>
+                      
+                      <div>
+                        <label for="contrast" class="block text-gray-700 font-medium mb-2 form-label">
+                          Contraste: <span id="contrast-value">0</span>
+                        </label>
+                        <input type="range" id="contrast" name="contrast" min="-100" max="100" value="0" 
+                               class="w-full slider">
+                      </div>
+                      
+                      <div>
+                        <label for="saturation" class="block text-gray-700 font-medium mb-2 form-label">
+                          Saturación: <span id="saturation-value">0</span>
+                        </label>
+                        <input type="range" id="saturation" name="saturation" min="-100" max="100" value="0" 
+                               class="w-full slider">
+                      </div>
+                      
+                      <div>
+                        <label for="blur" class="block text-gray-700 font-medium mb-2 form-label">
+                          Desenfoque: <span id="blur-value">0</span>px
+                        </label>
+                        <input type="range" id="blur" name="blur" min="0" max="20" value="0" 
+                               class="w-full slider">
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Filtros Preestablecidos -->
+                  <div class="space-y-4">
+                    <h3 class="text-lg font-medium text-gray-800">Filtros Preestablecidos</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                      <button type="button" class="btn btn-outline filter-preset" data-filter="none">
+                        Original
+                      </button>
+                      <button type="button" class="btn btn-outline filter-preset" data-filter="sepia">
+                        Sepia
+                      </button>
+                      <button type="button" class="btn btn-outline filter-preset" data-filter="grayscale">
+                        Blanco y Negro
+                      </button>
+                      <button type="button" class="btn btn-outline filter-preset" data-filter="vintage">
+                        Vintage
+                      </button>
+                      <button type="button" class="btn btn-outline filter-preset" data-filter="cold">
+                        Frío
+                      </button>
+                      <button type="button" class="btn btn-outline filter-preset" data-filter="warm">
+                        Cálido
+                      </button>
+                    </div>
+                    
+                    <div class="mt-4">
+                      <button type="button" class="btn btn-secondary w-full" onclick="resetFilters()">
+                        <i class="fas fa-refresh" aria-hidden="true"></i>
+                        Resetear Filtros
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Output Settings Section -->
         <section class="mb-8">
           <div class="bg-white rounded-lg shadow-md p-6 card">
@@ -2574,7 +2736,7 @@
                  tabindex="0"
                  aria-expanded="true"
                  aria-controls="output-content">
-              <h2 class="text-xl font-semibold">4. Configuración de salida</h2>
+              <h2 class="text-xl font-semibold">5. Configuración de salida</h2>
               <i class="fas fa-chevron-down section__icon" aria-hidden="true"></i>
             </div>
             <div id="output-content"
@@ -2681,7 +2843,7 @@
         <section class="mb-8">
           <div class="bg-white rounded-lg shadow-md p-6 card">
             <div class="flex justify-between items-center mb-4">
-              <h2 class="text-xl font-semibold">5. Vista previa</h2>
+              <h2 class="text-xl font-semibold">6. Vista previa</h2>
               <div class="flex gap-2">
                 <button id="fullscreen-btn" class="btn btn-primary button--action">
                   <i class="fas fa-expand" aria-hidden="true"></i>
@@ -2890,10 +3052,97 @@
       }
     };
     
-    // Cache para optimización de rendimiento
+    // Cache para optimización de rendimiento - MEJORADO
     const cache = {
       watermarkImage: null,
-      lastWatermarkConfig: null
+      lastWatermarkConfig: null,
+      processedImages: new Map(),
+      thumbnails: new Map(),
+      
+      // Configuración del cache
+      maxSize: 50, // Máximo 50 imágenes en cache
+      maxAge: 30 * 60 * 1000, // 30 minutos
+      
+      // Generar clave única para cache
+      generateKey: function(config) {
+        return JSON.stringify(config);
+      },
+      
+      // Obtener del cache
+      get: function(key) {
+        const item = this.processedImages.get(key);
+        if (!item) return null;
+        
+        // Verificar si ha expirado
+        if (Date.now() - item.timestamp > this.maxAge) {
+          this.processedImages.delete(key);
+          return null;
+        }
+        
+        // Actualizar timestamp (LRU)
+        item.timestamp = Date.now();
+        return item.data;
+      },
+      
+      // Guardar en cache
+      set: function(key, data) {
+        // Limpiar cache si está lleno
+        if (this.processedImages.size >= this.maxSize) {
+          this.cleanOldest();
+        }
+        
+        this.processedImages.set(key, {
+          data: data,
+          timestamp: Date.now(),
+          size: this.estimateSize(data)
+        });
+      },
+      
+      // Limpiar entradas más antiguas
+      cleanOldest: function() {
+        let oldest = null;
+        let oldestTime = Date.now();
+        
+        for (const [key, item] of this.processedImages.entries()) {
+          if (item.timestamp < oldestTime) {
+            oldestTime = item.timestamp;
+            oldest = key;
+          }
+        }
+        
+        if (oldest) {
+          this.processedImages.delete(oldest);
+        }
+      },
+      
+      // Estimar tamaño de datos
+      estimateSize: function(data) {
+        if (typeof data === 'string') {
+          return data.length * 2; // UTF-16
+        }
+        return 1000; // Estimación por defecto
+      },
+      
+      // Limpiar cache completo
+      clear: function() {
+        this.processedImages.clear();
+        this.thumbnails.clear();
+        this.watermarkImage = null;
+        this.lastWatermarkConfig = null;
+      },
+      
+      // Obtener estadísticas del cache
+      getStats: function() {
+        const totalSize = Array.from(this.processedImages.values())
+          .reduce((sum, item) => sum + (item.size || 0), 0);
+          
+        return {
+          entries: this.processedImages.size,
+          totalSize: totalSize,
+          maxSize: this.maxSize,
+          hitRate: this.hitCount / (this.hitCount + this.missCount) || 0
+        };
+      }
     };
 
     // Debounce function para optimizar eventos
@@ -3612,6 +3861,30 @@
 
     function setupEventListeners() {
       try {
+        // Configurar listeners para controles de filtros
+        ['brightness', 'contrast', 'saturation', 'blur'].forEach(filter => {
+          const slider = document.getElementById(filter);
+          if (slider) {
+            slider.addEventListener('input', (e) => {
+              FilterManager.applyFilter(filter, parseInt(e.target.value));
+            });
+          }
+        });
+        
+        // Configurar presets de filtros
+        const presetButtons = document.querySelectorAll('.filter-preset');
+        presetButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            FilterManager.applyPreset(btn.dataset.filter);
+          });
+        });
+        
+        // Listener para reset de filtros
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        if (resetFiltersBtn) {
+          resetFiltersBtn.addEventListener('click', resetFilters);
+        }
+        
         // Upload de archivos con optimización
         const dropArea = document.getElementById('drop-area');
         const fileInput = document.getElementById('file-input');
@@ -4253,6 +4526,9 @@
         
         // Apply watermark with caching
         applyWatermarkOptimized();
+        
+        // Aplicar filtros CSS al canvas
+        applyCanvasFilters();
         
         // Save state to history (debounced)
         if (typeof debouncedSaveHistory === 'undefined') {
@@ -5242,6 +5518,125 @@
       console.error('Unhandled promise rejection:', event.reason);
       showError('Error en operación asíncrona');
     });
+
+    // Sistema de Filtros Avanzados
+    const FilterManager = {
+      filters: {
+        brightness: 0,
+        contrast: 0,
+        saturation: 0,
+        blur: 0
+      },
+      
+      presets: {
+        none: { brightness: 0, contrast: 0, saturation: 0, blur: 0 },
+        sepia: { brightness: 10, contrast: 15, saturation: -30, blur: 0 },
+        grayscale: { brightness: 0, contrast: 0, saturation: -100, blur: 0 },
+        vintage: { brightness: -10, contrast: 20, saturation: -20, blur: 1 },
+        cold: { brightness: 5, contrast: 10, saturation: -15, blur: 0 },
+        warm: { brightness: 15, contrast: 5, saturation: 20, blur: 0 }
+      },
+      
+      applyFilter: function(filterName, value) {
+        this.filters[filterName] = value;
+        this.updateFilterDisplay(filterName, value);
+        debouncedUpdatePreview();
+      },
+      
+      applyPreset: function(presetName) {
+        const preset = this.presets[presetName];
+        if (!preset) return;
+        
+        // Aplicar todos los valores del preset
+        Object.keys(preset).forEach(filter => {
+          this.filters[filter] = preset[filter];
+          this.updateFilterDisplay(filter, preset[filter]);
+          
+          // Actualizar sliders
+          const slider = document.getElementById(filter);
+          if (slider) {
+            slider.value = preset[filter];
+          }
+        });
+        
+        // Resaltar botón activo
+        this.highlightActivePreset(presetName);
+        debouncedUpdatePreview();
+      },
+      
+      updateFilterDisplay: function(filterName, value) {
+        const display = document.getElementById(`${filterName}-value`);
+        if (display) {
+          display.textContent = filterName === 'blur' ? `${value}px` : value;
+        }
+      },
+      
+      highlightActivePreset: function(activePreset) {
+        const presetButtons = document.querySelectorAll('.filter-preset');
+        presetButtons.forEach(btn => {
+          btn.classList.remove('btn-primary');
+          btn.classList.add('btn-outline');
+          
+          if (btn.dataset.filter === activePreset) {
+            btn.classList.remove('btn-outline');
+            btn.classList.add('btn-primary');
+          }
+        });
+      },
+      
+      reset: function() {
+        Object.keys(this.filters).forEach(filter => {
+          this.filters[filter] = 0;
+          this.updateFilterDisplay(filter, 0);
+          
+          const slider = document.getElementById(filter);
+          if (slider) {
+            slider.value = 0;
+          }
+        });
+        
+        this.highlightActivePreset('none');
+        debouncedUpdatePreview();
+      },
+      
+      getFilterString: function() {
+        const { brightness, contrast, saturation, blur } = this.filters;
+        
+        let filterStr = '';
+        
+        if (brightness !== 0) {
+          filterStr += `brightness(${(100 + brightness) / 100}) `;
+        }
+        
+        if (contrast !== 0) {
+          filterStr += `contrast(${(100 + contrast) / 100}) `;
+        }
+        
+        if (saturation !== 0) {
+          filterStr += `saturate(${(100 + saturation) / 100}) `;
+        }
+        
+        if (blur > 0) {
+          filterStr += `blur(${blur}px) `;
+        }
+        
+        return filterStr.trim();
+      }
+    };
+
+    // Función para resetear filtros
+    function resetFilters() {
+      FilterManager.reset();
+      UIManager.showSuccess('Filtros reseteados');
+    }
+
+    // Función para aplicar filtros al canvas
+    function applyCanvasFilters() {
+      if (!canvas) return;
+      
+      const filterString = FilterManager.getFilterString();
+      canvas.style.filter = filterString;
+    }
   </script>
 </body>
 </html>
