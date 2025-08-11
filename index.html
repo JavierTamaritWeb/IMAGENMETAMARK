@@ -6015,6 +6015,9 @@
         // Initialize zoom keyboard shortcuts
         initZoomKeyboardShortcuts();
         
+        // Initialize mouse wheel zoom
+        initMouseWheelZoom();
+        
         // Initialize mobile responsive features
         initMobileFeatures();
         
@@ -7140,6 +7143,12 @@
             editorContainer.classList.remove('editor-container--hidden');
           }
           
+          // Mostrar controles de zoom
+          const zoomControls = document.getElementById('zoom-controls');
+          if (zoomControls) {
+            zoomControls.classList.remove('hidden');
+          }
+          
           // Configurar canvas
           setupCanvas();
           
@@ -7239,6 +7248,19 @@
       canvas.style.objectFit = 'contain';
       canvas.style.maxWidth = '100%';
       canvas.style.height = 'auto';
+      
+      // Configurar zoom con rueda del ratón en el canvas
+      canvas.addEventListener('wheel', function(e) {
+        if (!currentImage) return;
+        e.preventDefault();
+        
+        const delta = e.deltaY;
+        if (delta < 0) {
+          zoomInWheel();
+        } else if (delta > 0) {
+          zoomOutWheel();
+        }
+      }, { passive: false });
     }
 
     function updatePreview() {
@@ -8764,6 +8786,13 @@
       // Ocultar elementos
       document.getElementById('file-info').classList.add('file-info--hidden');
       document.getElementById('editor-container').classList.add('editor-container--hidden');
+      
+      // Ocultar controles de zoom
+      const zoomControls = document.getElementById('zoom-controls');
+      if (zoomControls) {
+        zoomControls.classList.add('hidden');
+      }
+      
       hideImageInfo(); // Ocultar información de imagen
       
       // Limpiar canvas
@@ -9297,6 +9326,25 @@
       }
     }
     
+    // Funciones de zoom específicas para rueda del ratón (más suaves)
+    function zoomInWheel() {
+      if (currentZoom < maxZoom) {
+        const wheelStep = 0.05; // Paso más pequeño para rueda del ratón
+        currentZoom = Math.min(currentZoom + wheelStep, maxZoom);
+        applyZoom();
+        updateZoomLevel();
+      }
+    }
+    
+    function zoomOutWheel() {
+      if (currentZoom > minZoom) {
+        const wheelStep = 0.05; // Paso más pequeño para rueda del ratón
+        currentZoom = Math.max(currentZoom - wheelStep, minZoom);
+        applyZoom();
+        updateZoomLevel();
+      }
+    }
+    
     function resetZoom() {
       currentZoom = 1.0;
       isZoomed = false;
@@ -9370,6 +9418,43 @@
           }
         }
       });
+    }
+    
+    // Zoom con rueda del ratón
+    function initMouseWheelZoom() {
+      const previewContainer = document.querySelector('.preview__container');
+      const canvas = document.getElementById('preview-canvas');
+      
+      if (!previewContainer) return;
+      
+      const handleWheelZoom = function(e) {
+        // Solo hacer zoom si hay una imagen cargada
+        if (!currentImage || !canvas) return;
+        
+        // Prevenir el scroll normal de la página
+        e.preventDefault();
+        
+        // Determinar dirección del scroll
+        const delta = e.deltaY;
+        
+        if (delta < 0) {
+          // Scroll hacia arriba = Zoom In
+          zoomInWheel();
+        } else if (delta > 0) {
+          // Scroll hacia abajo = Zoom Out
+          zoomOutWheel();
+        }
+      };
+      
+      // Agregar event listener al contenedor del preview
+      previewContainer.addEventListener('wheel', handleWheelZoom, { passive: false });
+      
+      // También agregar al canvas directamente cuando esté disponible
+      if (canvas) {
+        canvas.addEventListener('wheel', handleWheelZoom, { passive: false });
+      }
+      
+      console.log('Mouse wheel zoom initialized');
     }
     
     // ===== MOBILE RESPONSIVE FEATURES =====
