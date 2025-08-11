@@ -3386,6 +3386,54 @@
                       </div>
                     </div>
 
+                    <!-- Image Rotation Section -->
+                    <div class="config-section">
+                      <h4 class="config-title">
+                        <i class="fas fa-redo"></i>Rotación de imagen
+                      </h4>
+                      
+                      <!-- Rotation controls -->
+                      <div class="space-y-3">
+                        <!-- Current rotation display -->
+                        <div id="current-rotation-display" class="p-2 bg-gray-50 rounded text-sm hidden">
+                          <span class="text-gray-600">Rotación actual: </span>
+                          <span id="current-rotation" class="font-medium">0°</span>
+                        </div>
+                        
+                        <!-- Rotation buttons -->
+                        <div class="grid grid-cols-2 gap-2">
+                          <button type="button" id="rotate-90" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i>
+                            90° ↻
+                          </button>
+                          <button type="button" id="rotate-180" class="btn btn-secondary">
+                            <i class="fas fa-sync"></i>
+                            180° ↻
+                          </button>
+                          <button type="button" id="rotate-270" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i>
+                            270° ↻
+                          </button>
+                          <button type="button" id="reset-rotation" class="btn btn-outline">
+                            <i class="fas fa-compass"></i>
+                            Original
+                          </button>
+                        </div>
+                        
+                        <!-- Quick actions -->
+                        <div class="flex gap-2">
+                          <button type="button" id="flip-horizontal" class="btn btn-outline flex-1">
+                            <i class="fas fa-arrows-alt-h"></i>
+                            Voltear H
+                          </button>
+                          <button type="button" id="flip-vertical" class="btn btn-outline flex-1">
+                            <i class="fas fa-arrows-alt-v"></i>
+                            Voltear V
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- Format Selection -->
                     <div class="config-section">
                       <h4 class="config-title">
@@ -3504,6 +3552,11 @@
     // Variables para redimensionado
     let originalImageDimensions = { width: 0, height: 0 };
     let isResizing = false;
+    
+    // Variables para rotación
+    let currentRotation = 0; // Degrees: 0, 90, 180, 270
+    let isFlippedHorizontally = false;
+    let isFlippedVertically = false;
     
     // Variables para configuración de salida
     let outputQuality = 0.8; // Valor por defecto (80%)
@@ -4010,6 +4063,9 @@
         
         // Initialize character counters
         initCharacterCounters();
+        
+        // Initialize rotation functionality
+        initRotation();
         
         // Inicializar estado de marcas de agua
         setTimeout(() => {
@@ -5085,6 +5141,11 @@
           originalWidth = img.width;
           originalHeight = img.height;
           
+          // Reset rotation state when loading new image
+          currentRotation = 0;
+          isFlippedHorizontally = false;
+          isFlippedVertically = false;
+          
           console.log('=== IMAGEN CARGADA ===');
           console.log('currentImage asignado:', !!currentImage);
           console.log('Dimensiones originales:', originalWidth, 'x', originalHeight);
@@ -5130,6 +5191,9 @@
           const heightInput = document.getElementById('resize-height');
           if (widthInput) widthInput.value = originalWidth;
           if (heightInput) heightInput.value = originalHeight;
+          
+          // Update rotation display
+          updateRotationDisplay();
           
           // Actualizar vista previa
           updatePreview();
@@ -6280,6 +6344,244 @@
         counter.textContent = `${length}/${limit} (${Math.abs(remaining)} sobre el límite)`;
       }
     }
+    
+    // Image rotation functionality
+    function initRotation() {
+      const rotate90Btn = document.getElementById('rotate-90');
+      const rotate180Btn = document.getElementById('rotate-180');
+      const rotate270Btn = document.getElementById('rotate-270');
+      const resetRotationBtn = document.getElementById('reset-rotation');
+      const flipHorizontalBtn = document.getElementById('flip-horizontal');
+      const flipVerticalBtn = document.getElementById('flip-vertical');
+      
+      // Rotation buttons
+      if (rotate90Btn) {
+        rotate90Btn.addEventListener('click', () => rotateImage(90));
+      }
+      
+      if (rotate180Btn) {
+        rotate180Btn.addEventListener('click', () => rotateImage(180));
+      }
+      
+      if (rotate270Btn) {
+        rotate270Btn.addEventListener('click', () => rotateImage(270));
+      }
+      
+      if (resetRotationBtn) {
+        resetRotationBtn.addEventListener('click', resetRotation);
+      }
+      
+      // Flip buttons
+      if (flipHorizontalBtn) {
+        flipHorizontalBtn.addEventListener('click', () => flipImage('horizontal'));
+      }
+      
+      if (flipVerticalBtn) {
+        flipVerticalBtn.addEventListener('click', () => flipImage('vertical'));
+      }
+    }
+
+    function rotateImage(degrees) {
+      if (!currentImage) {
+        console.error('No current image available');
+        return;
+      }
+      
+      try {
+        // Update rotation state
+        currentRotation = (currentRotation + degrees) % 360;
+        
+        // Apply transformation
+        applyImageTransformation();
+        
+        // Update rotation display
+        updateRotationDisplay();
+        
+        // Show success message
+        showSuccessMessage(`Imagen rotada ${degrees}° (Total: ${currentRotation}°)`);
+        
+        console.log('Image rotated:', degrees, 'degrees. Total rotation:', currentRotation);
+        
+      } catch (error) {
+        console.error('Error rotating image:', error);
+        showSuccessMessage('Error al rotar la imagen');
+      }
+    }
+
+    function flipImage(direction) {
+      if (!currentImage) {
+        console.error('No current image available');
+        return;
+      }
+      
+      try {
+        if (direction === 'horizontal') {
+          isFlippedHorizontally = !isFlippedHorizontally;
+        } else if (direction === 'vertical') {
+          isFlippedVertically = !isFlippedVertically;
+        }
+        
+        // Apply transformation
+        applyImageTransformation();
+        
+        // Update rotation display
+        updateRotationDisplay();
+        
+        // Show success message
+        const flipText = direction === 'horizontal' ? 'horizontalmente' : 'verticalmente';
+        showSuccessMessage(`Imagen volteada ${flipText}`);
+        
+        console.log('Image flipped:', direction);
+        
+      } catch (error) {
+        console.error('Error flipping image:', error);
+        showSuccessMessage('Error al voltear la imagen');
+      }
+    }
+
+    function applyImageTransformation() {
+      if (!currentImage) return;
+      
+      const canvas = document.getElementById('preview-canvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      
+      // Create a temporary canvas with original image
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      
+      // Use original dimensions for source
+      tempCanvas.width = originalWidth;
+      tempCanvas.height = originalHeight;
+      tempCtx.drawImage(currentImage, 0, 0, originalWidth, originalHeight);
+      
+      // Calculate new dimensions based on rotation
+      let newWidth, newHeight;
+      if (currentRotation === 90 || currentRotation === 270) {
+        newWidth = originalHeight;
+        newHeight = originalWidth;
+      } else {
+        newWidth = originalWidth;
+        newHeight = originalHeight;
+      }
+      
+      // Set canvas size
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, newWidth, newHeight);
+      
+      // Save context state
+      ctx.save();
+      
+      // Move to center of canvas for transformations
+      ctx.translate(newWidth / 2, newHeight / 2);
+      
+      // Apply rotation
+      if (currentRotation !== 0) {
+        ctx.rotate((currentRotation * Math.PI) / 180);
+      }
+      
+      // Apply flips
+      const scaleX = isFlippedHorizontally ? -1 : 1;
+      const scaleY = isFlippedVertically ? -1 : 1;
+      ctx.scale(scaleX, scaleY);
+      
+      // Draw image centered (use original dimensions for drawing)
+      ctx.drawImage(
+        tempCanvas,
+        -originalWidth / 2,
+        -originalHeight / 2,
+        originalWidth,
+        originalHeight
+      );
+      
+      // Restore context state
+      ctx.restore();
+      
+      // Create new image from canvas for currentImage reference
+      const newImageData = canvas.toDataURL('image/png');
+      const newImage = new Image();
+      newImage.onload = function() {
+        currentImage = newImage;
+        currentImage.width = newWidth;
+        currentImage.height = newHeight;
+        
+        // Update image info
+        updateImageInfo();
+        
+        // Update preview with watermark if present
+        updatePreview();
+      };
+      newImage.src = newImageData;
+    }
+
+    function resetRotation() {
+      if (!currentImage) return;
+      
+      try {
+        // Reset all transformations
+        currentRotation = 0;
+        isFlippedHorizontally = false;
+        isFlippedVertically = false;
+        
+        // Restore original image
+        if (originalWidth && originalHeight) {
+          currentImage.width = originalWidth;
+          currentImage.height = originalHeight;
+        }
+        
+        // Redraw original image
+        const canvas = document.getElementById('preview-canvas');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          canvas.width = currentImage.width;
+          canvas.height = currentImage.height;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(currentImage, 0, 0);
+        }
+        
+        // Update displays
+        updateRotationDisplay();
+        updateImageInfo();
+        updatePreview();
+        
+        showSuccessMessage('Rotación restablecida al original');
+        
+      } catch (error) {
+        console.error('Error resetting rotation:', error);
+        showSuccessMessage('Error al restablecer la rotación');
+      }
+    }
+
+    function updateRotationDisplay() {
+      const currentRotationElement = document.getElementById('current-rotation');
+      const currentRotationDisplay = document.getElementById('current-rotation-display');
+      
+      if (currentRotationElement && currentRotationDisplay) {
+        let displayText = `${currentRotation}°`;
+        
+        // Add flip indicators
+        if (isFlippedHorizontally || isFlippedVertically) {
+          const flips = [];
+          if (isFlippedHorizontally) flips.push('H');
+          if (isFlippedVertically) flips.push('V');
+          displayText += ` (${flips.join(', ')})`;
+        }
+        
+        currentRotationElement.textContent = displayText;
+        
+        // Show/hide display based on transformations
+        if (currentRotation !== 0 || isFlippedHorizontally || isFlippedVertically) {
+          currentRotationDisplay.classList.remove('hidden');
+        } else {
+          currentRotationDisplay.classList.add('hidden');
+        }
+      }
+    }
+    
     
     // Hide image info when no image is loaded
     function hideImageInfo() {
