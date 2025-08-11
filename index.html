@@ -4488,6 +4488,85 @@
       cursor: grabbing;
     }
     
+    /* Controles de Zoom */
+    .zoom-controls {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 8px 12px;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3), 0 2px 6px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 10;
+    }
+    
+    .zoom-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+    
+    .zoom-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .zoom-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .zoom-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .zoom-level {
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    
+    .zoom-reset {
+      background: rgba(255, 255, 255, 0.15);
+      margin-left: 4px;
+    }
+    
+    .zoom-reset:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    
+    /* Dark mode adjustments */
+    [data-theme="dark"] .zoom-controls {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    
+    [data-theme="dark"] .zoom-btn {
+      background: rgba(148, 163, 184, 0.2);
+    }
+    
+    [data-theme="dark"] .zoom-btn:hover {
+      background: rgba(148, 163, 184, 0.3);
+    }
+    
     /* Loading states for mobile */
     @media (max-width: 767px) {
       .loading .btn {
@@ -5352,6 +5431,20 @@
             </div>
             <div class="preview__container preview-container relative">
               <canvas id="preview-canvas" class="preview__canvas"></canvas>
+              
+              <!-- Controles de Zoom -->
+              <div id="zoom-controls" class="zoom-controls hidden">
+                <button id="zoom-out-btn" class="zoom-btn" title="Alejar (-)">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <span id="zoom-level" class="zoom-level">100%</span>
+                <button id="zoom-in-btn" class="zoom-btn" title="Acercar (+)">
+                  <i class="fas fa-plus"></i>
+                </button>
+                <button id="zoom-reset-btn" class="zoom-btn zoom-reset" title="Restablecer zoom (Ctrl+0)">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
             </div>
             <div class="mt-4 flex justify-between gap-3">
               <div class="flex gap-2">
@@ -5402,6 +5495,13 @@
     let currentRotation = 0; // Degrees: 0, 90, 180, 270
     let isFlippedHorizontally = false;
     let isFlippedVertically = false;
+    
+    // Variables para zoom
+    let currentZoom = 1.0; // Factor de zoom (1.0 = 100%)
+    let minZoom = 0.1; // Zoom mínimo (10%)
+    let maxZoom = 5.0; // Zoom máximo (500%)
+    let zoomStep = 0.1; // Incremento del zoom (10%)
+    let isZoomed = false;
     
     // Variables para configuración de salida
     let outputQuality = 0.8; // Valor por defecto (80%)
@@ -5911,6 +6011,9 @@
         
         // Initialize rotation functionality
         initRotation();
+        
+        // Initialize zoom keyboard shortcuts
+        initZoomKeyboardShortcuts();
         
         // Initialize mobile responsive features
         initMobileFeatures();
@@ -6478,6 +6581,18 @@
         if (watermarkForm) {
           watermarkForm.addEventListener('submit', handleWatermarkSubmit);
         }
+
+        // Zoom controls
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+        const zoomResetBtn = document.getElementById('zoom-reset-btn');
+        const zoomLevel = document.getElementById('zoom-level');
+
+        if (zoomInBtn && zoomOutBtn && zoomResetBtn) {
+          zoomInBtn.addEventListener('click', zoomIn);
+          zoomOutBtn.addEventListener('click', zoomOut);
+          zoomResetBtn.addEventListener('click', resetZoom);
+        }
         
         // Watermark type toggle
         const textEnabledCheckbox = document.getElementById('watermark-text-enabled');
@@ -7027,6 +7142,11 @@
           
           // Configurar canvas
           setupCanvas();
+          
+          // Initialize zoom
+          currentZoom = 1.0;
+          isZoomed = false;
+          updateZoomLevel();
           
           // Mostrar información de la imagen
           updateImageInfo();
@@ -9155,6 +9275,101 @@
       
       const filterString = FilterManager.getFilterString();
       canvas.style.filter = filterString;
+    }
+    
+    // ===== ZOOM FUNCTIONALITY =====
+    
+    function zoomIn() {
+      if (currentZoom < maxZoom) {
+        currentZoom = Math.min(currentZoom + zoomStep, maxZoom);
+        applyZoom();
+        updateZoomLevel();
+        UIManager.showSuccess(`Zoom: ${Math.round(currentZoom * 100)}%`);
+      }
+    }
+    
+    function zoomOut() {
+      if (currentZoom > minZoom) {
+        currentZoom = Math.max(currentZoom - zoomStep, minZoom);
+        applyZoom();
+        updateZoomLevel();
+        UIManager.showSuccess(`Zoom: ${Math.round(currentZoom * 100)}%`);
+      }
+    }
+    
+    function resetZoom() {
+      currentZoom = 1.0;
+      isZoomed = false;
+      applyZoom();
+      updateZoomLevel();
+      UIManager.showSuccess('Zoom reseteado');
+    }
+    
+    function applyZoom() {
+      if (!canvas) return;
+      
+      if (currentZoom !== 1.0) {
+        isZoomed = true;
+        canvas.classList.add('zoomed');
+        canvas.style.transform = `scale(${currentZoom})`;
+        canvas.style.transformOrigin = 'center center';
+      } else {
+        isZoomed = false;
+        canvas.classList.remove('zoomed');
+        canvas.style.transform = 'scale(1)';
+      }
+      
+      // Actualizar scroll del contenedor si es necesario
+      const previewContainer = document.querySelector('.preview__container');
+      if (previewContainer && isZoomed) {
+        previewContainer.style.overflow = 'auto';
+      } else if (previewContainer) {
+        previewContainer.style.overflow = 'hidden';
+      }
+    }
+    
+    function updateZoomLevel() {
+      const zoomLevelElement = document.getElementById('zoom-level');
+      if (zoomLevelElement) {
+        zoomLevelElement.textContent = `${Math.round(currentZoom * 100)}%`;
+      }
+      
+      // Actualizar estado de los botones
+      const zoomInBtn = document.getElementById('zoom-in-btn');
+      const zoomOutBtn = document.getElementById('zoom-out-btn');
+      
+      if (zoomInBtn) {
+        zoomInBtn.disabled = currentZoom >= maxZoom;
+        zoomInBtn.style.opacity = currentZoom >= maxZoom ? '0.5' : '1';
+      }
+      
+      if (zoomOutBtn) {
+        zoomOutBtn.disabled = currentZoom <= minZoom;
+        zoomOutBtn.style.opacity = currentZoom <= minZoom ? '0.5' : '1';
+      }
+    }
+    
+    // Atajos de teclado para zoom
+    function initZoomKeyboardShortcuts() {
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+          switch(e.key) {
+            case '+':
+            case '=':
+              e.preventDefault();
+              zoomIn();
+              break;
+            case '-':
+              e.preventDefault();
+              zoomOut();
+              break;
+            case '0':
+              e.preventDefault();
+              resetZoom();
+              break;
+          }
+        }
+      });
     }
     
     // ===== MOBILE RESPONSIVE FEATURES =====
