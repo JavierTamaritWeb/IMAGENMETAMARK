@@ -2,7 +2,7 @@
 
 **Editor profesional de metadatos e imágenes con marcas de agua** - Una aplicación web completa para editar metadatos EXIF, aplicar marcas de agua personalizadas y optimizar imágenes.
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![JavaScript](https://img.shields.io/badge/javascript-ES6+-yellow.svg)
 ![HTML5](https://img.shields.io/badge/html5-valid-orange.svg)
@@ -28,19 +28,22 @@
 - ✅ **Sistema de historial**: Deshacer/Rehacer con 20 estados (Ctrl+Z/Ctrl+Y)
 - ✅ **Control de calidad**: Ajuste de compresión del 1% al 100%
 - ✅ **Conversión avanzada**: JPEG, PNG, WebP, AVIF con librerías @jsquash optimizadas
-- ✅ **Vista de pantalla completa**: Previsualización inmersiva
+- ✅ **Vista de pantalla completa**: Previsualización inmersiva con botones adaptativos
 - ✅ **Test de conversión**: Verificación automática de formatos soportados
 - ✅ **Optimización automática**: Compresión inteligente sin pérdida de calidad
+- ✅ **Rotación de imágenes**: Rotación 90°, 180°, 270° y restaurar original
 
 ### 🎨 **Interfaz y Experiencia**
 
 - ✅ **Modo oscuro/claro**: Cambio automático según preferencias del sistema
 - ✅ **Diseño responsivo**: Optimizado para desktop, tablet y móvil
+- ✅ **Botones premium**: Estilo "Mis botones" con gradientes y efectos hover
+- ✅ **UI completamente en mayúsculas**: Textos, botones e interfaz en mayúsculas
 - ✅ **Botones adaptativos**: Ancho automático según contenido del texto
 - ✅ **Drag & Drop**: Arrastra imágenes directamente a la aplicación
 - ✅ **Accesibilidad**: Cumple estándares WCAG 2.1
 - ✅ **Animaciones fluidas**: Transiciones suaves y micro-interacciones
-- ✅ **UI en mayúsculas**: Textos y placeholders en mayúsculas para mejor legibilidad
+- ✅ **Botón centrado**: Botón "Seleccionar archivo" perfectamente centrado
 
 ## 🚀 Demo en Vivo
 
@@ -232,25 +235,31 @@ AppConfig.maxCanvasHeight = 600;
 
 ## 📝 Roadmap
 
-### **v2.1 (Q3 2025)** ✅ COMPLETADO
+### **v2.2 (Q3 2025)** ✅ COMPLETADO
 
 - [x] ✅ **Conversión AVIF mejorada**: Integración de @jsquash/avif para máxima calidad
-- [x] ✅ **Botones adaptativos**: Ancho automático según contenido del texto  
-- [x] ✅ **UI mejorada**: Textos y placeholders en mayúsculas
+- [x] ✅ **Botones premium "Mis botones"**: Sistema de botones con gradientes y efectos hover
+- [x] ✅ **UI completamente en mayúsculas**: Toda la interfaz en mayúsculas para mejor legibilidad
+- [x] ✅ **Botones adaptativos mejorados**: Padding y dimensiones optimizadas para mejor UX
+- [x] ✅ **Centrado perfecto**: Botón "Seleccionar archivo" perfectamente centrado
 - [x] ✅ **Test de conversión**: Verificación automática de formatos soportados
-- [ ] Editor de filtros (blur, sepia, saturación)
-- [ ] Soporte para archivos RAW
-- [ ] Procesamiento en lotes
+- [x] ✅ **Rotación de imágenes**: Herramientas de rotación 90°, 180°, 270° y restaurar original
+- [x] ✅ **Botones de pantalla completa y descarga optimizados**: Dimensiones perfectas para contenido
 
-### **v2.2 (Q4 2025)**
+### **v2.3 (Q4 2025)**
+
+- [ ] Editor de filtros avanzados (blur, sepia, saturación, contraste)
+- [ ] Soporte para archivos RAW (CR2, NEF, ARW)
+- [ ] Procesamiento en lotes (múltiples imágenes)
+- [ ] Herramientas de recorte avanzado
+- [ ] Efectos de desenfoque selectivo
+
+### **v3.0 (2026)**
 
 - [ ] Plugin para WordPress
 - [ ] API REST para integración
 - [ ] Editor avanzado de metadatos GPS
 - [ ] Soporte para videos (marcas de agua)
-
-### **v3.0 (2026)**
-
 - [ ] Inteligencia artificial para optimización automática
 - [ ] Editor colaborativo en tiempo real
 - [ ] Aplicación móvil nativa
@@ -259,7 +268,7 @@ AppConfig.maxCanvasHeight = 600;
 ## 📊 Estadísticas del Proyecto
 
 ```text
-📦 Tamaño total: ~95KB (minificado, incluye @jsquash)
+📦 Tamaño total: ~98KB (minificado, incluye @jsquash y "Mis botones")
 ⚡ Tiempo de carga: <2 segundos
 🔧 Dependencias externas: @jsquash libraries (CDN)
 🎯 Compatibilidad: 95%+ navegadores modernos
@@ -267,6 +276,9 @@ AppConfig.maxCanvasHeight = 600;
 ♿ Accesibilidad: WCAG 2.1 AA
 🖼️ Formatos soportados: JPEG, PNG, WebP, AVIF
 ⚙️ Conversión avanzada: Librerías optimizadas @jsquash
+🎨 Sistema de botones: Premium "Mis botones" con gradientes
+📄 UI: Completamente en mayúsculas para mejor legibilidad
+🔄 Herramientas: Rotación, pantalla completa, historial
 ```
 
 ## 🔐 Seguridad y Privacidad
