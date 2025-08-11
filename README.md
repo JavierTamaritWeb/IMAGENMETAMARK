@@ -2,11 +2,12 @@
 
 **Editor profesional de metadatos e imágenes con marcas de agua** - Una aplicación web completa para editar metadatos EXIF, aplicar marcas de agua personalizadas y optimizar imágenes.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![JavaScript](https://img.shields.io/badge/javascript-ES6+-yellow.svg)
 ![HTML5](https://img.shields.io/badge/html5-valid-orange.svg)
 ![CSS3](https://img.shields.io/badge/css3-modern-blue.svg)
+![AVIF](https://img.shields.io/badge/AVIF-supported-green.svg)
 
 ## ✨ Características Principales
 
@@ -23,18 +24,23 @@
 - ✅ **Doble marca de agua**: Combina texto e imagen simultáneamente
 
 ### 🔧 **Herramientas de Edición**
+
 - ✅ **Sistema de historial**: Deshacer/Rehacer con 20 estados (Ctrl+Z/Ctrl+Y)
 - ✅ **Control de calidad**: Ajuste de compresión del 1% al 100%
-- ✅ **Múltiples formatos**: JPEG, PNG, WebP, AVIF
+- ✅ **Conversión avanzada**: JPEG, PNG, WebP, AVIF con librerías @jsquash optimizadas
 - ✅ **Vista de pantalla completa**: Previsualización inmersiva
+- ✅ **Test de conversión**: Verificación automática de formatos soportados
 - ✅ **Optimización automática**: Compresión inteligente sin pérdida de calidad
 
 ### 🎨 **Interfaz y Experiencia**
+
 - ✅ **Modo oscuro/claro**: Cambio automático según preferencias del sistema
 - ✅ **Diseño responsivo**: Optimizado para desktop, tablet y móvil
+- ✅ **Botones adaptativos**: Ancho automático según contenido del texto
 - ✅ **Drag & Drop**: Arrastra imágenes directamente a la aplicación
 - ✅ **Accesibilidad**: Cumple estándares WCAG 2.1
 - ✅ **Animaciones fluidas**: Transiciones suaves y micro-interacciones
+- ✅ **UI en mayúsculas**: Textos y placeholders en mayúsculas para mejor legibilidad
 
 ## 🚀 Demo en Vivo
 
@@ -128,10 +134,12 @@ php -S localhost:8000
   - Posiciónala donde prefieras
 ```
 
-### 4️⃣ **Optimizar y Descargar**
-```
+### **4️⃣ Optimizar y Descargar**
+
+```text
 • Ajusta la calidad de compresión (1-100%)
 • Selecciona formato de salida (JPEG, PNG, WebP, AVIF)
+• Usa "Test conversión" para verificar compatibilidad
 • Haz clic en "Descargar imagen" o usa Ctrl+S
 ```
 
@@ -148,16 +156,21 @@ php -S localhost:8000
 ## 🔧 Características Técnicas
 
 ### **Tecnologías Utilizadas**
+
 - **Frontend**: HTML5, CSS3, JavaScript ES6+
 - **Frameworks**: TailwindCSS para diseño responsivo
 - **Icons**: Font Awesome 6.4.0
 - **APIs**: Canvas API, File System Access API, Fullscreen API
+- **Conversión de imágenes**: @jsquash/avif, @jsquash/png, @jsquash/jpeg, @jsquash/webp
 
 ### **Optimizaciones de Rendimiento**
+
 - ✅ **Debouncing**: Evita renderizado excesivo durante edición
 - ✅ **Caching**: Almacena marcas de agua para reutilización
 - ✅ **Lazy Loading**: Carga optimizada de recursos
 - ✅ **RequestAnimationFrame**: Animaciones suaves y eficientes
+- ✅ **Compresión avanzada**: Librerías @jsquash para mejor calidad/tamaño
+- ✅ **Fallback inteligente**: Sistema de respaldo para máxima compatibilidad
 
 ### **Compatibilidad**
 ```
@@ -219,19 +232,25 @@ AppConfig.maxCanvasHeight = 600;
 
 ## 📝 Roadmap
 
-### **v2.1 (Q3 2025)**
+### **v2.1 (Q3 2025)** ✅ COMPLETADO
+
+- [x] ✅ **Conversión AVIF mejorada**: Integración de @jsquash/avif para máxima calidad
+- [x] ✅ **Botones adaptativos**: Ancho automático según contenido del texto  
+- [x] ✅ **UI mejorada**: Textos y placeholders en mayúsculas
+- [x] ✅ **Test de conversión**: Verificación automática de formatos soportados
 - [ ] Editor de filtros (blur, sepia, saturación)
 - [ ] Soporte para archivos RAW
 - [ ] Procesamiento en lotes
-- [ ] Integración con servicios en la nube
 
 ### **v2.2 (Q4 2025)**
+
 - [ ] Plugin para WordPress
 - [ ] API REST para integración
 - [ ] Editor avanzado de metadatos GPS
 - [ ] Soporte para videos (marcas de agua)
 
 ### **v3.0 (2026)**
+
 - [ ] Inteligencia artificial para optimización automática
 - [ ] Editor colaborativo en tiempo real
 - [ ] Aplicación móvil nativa
@@ -239,13 +258,15 @@ AppConfig.maxCanvasHeight = 600;
 
 ## 📊 Estadísticas del Proyecto
 
-```
-📦 Tamaño total: ~85KB (minificado)
+```text
+📦 Tamaño total: ~95KB (minificado, incluye @jsquash)
 ⚡ Tiempo de carga: <2 segundos
-🔧 Dependencias: 0 (vanilla JavaScript)
+🔧 Dependencias externas: @jsquash libraries (CDN)
 🎯 Compatibilidad: 95%+ navegadores modernos
 📱 Responsive: 100% compatible móvil/desktop
 ♿ Accesibilidad: WCAG 2.1 AA
+🖼️ Formatos soportados: JPEG, PNG, WebP, AVIF
+⚙️ Conversión avanzada: Librerías optimizadas @jsquash
 ```
 
 ## 🔐 Seguridad y Privacidad
@@ -274,16 +295,20 @@ AppConfig.maxCanvasHeight = 600;
 • Intenta con un formato diferente (JPG, PNG)
 ```
 
-#### **⚠️ "Formato no soportado"**
-```
-• Algunos navegadores no soportan WebP/AVIF
-• Usa Chrome/Firefox actualizados para mejor compatibilidad
-• Convierte a JPEG/PNG como alternativa
+### **⚠️ "Formato no soportado"**
+
+```text
+• Algunos navegadores no soportan WebP/AVIF completamente
+• Usa "Test conversión" para verificar compatibilidad en tu navegador
+• Usa Chrome/Firefox actualizados para mejor soporte
+• Convierte a JPEG/PNG como alternativa universal
 ```
 
 #### **🐌 "Rendimiento lento"**
-```
+
+```text
 • Reduce el tamaño de la imagen original
+• Usa el botón "Test conversión" para comprobar rendimiento
 • Cierra otras pestañas del navegador
 • Usa Chrome para mejor rendimiento de Canvas
 ```
