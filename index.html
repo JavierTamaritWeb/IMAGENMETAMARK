@@ -816,6 +816,111 @@
       color: #ef4444; /* red-500 */
     }
 
+    /* Progress bar styles */
+    .progress-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .progress-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .progress-container {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    
+    [data-theme="dark"] .progress-container {
+      background: #374151; /* gray-700 */
+      color: white;
+    }
+    
+    .progress-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1f2937; /* gray-800 */
+    }
+    
+    [data-theme="dark"] .progress-title {
+      color: #f9fafb; /* gray-50 */
+    }
+    
+    .progress-bar-container {
+      background: #e5e7eb; /* gray-200 */
+      border-radius: 9999px;
+      height: 8px;
+      margin: 16px 0;
+      overflow: hidden;
+    }
+    
+    [data-theme="dark"] .progress-bar-container {
+      background: #4b5563; /* gray-600 */
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8); /* blue gradient */
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+      width: 0%;
+      position: relative;
+    }
+    
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .progress-text {
+      font-size: 0.875rem;
+      color: #6b7280; /* gray-500 */
+      margin-top: 8px;
+    }
+    
+    [data-theme="dark"] .progress-text {
+      color: #d1d5db; /* gray-300 */
+    }
+    
+    .progress-eta {
+      font-size: 0.75rem;
+      color: #9ca3af; /* gray-400 */
+      margin-top: 4px;
+    }
+    
+    [data-theme="dark"] .progress-eta {
+      color: #9ca3af; /* gray-400 */
+    }
+
     /* Asegurar que el texto de botones esté en una sola línea */
     .btn,
     button,
@@ -4701,7 +4806,7 @@
         }
         
         if (downloadImageBtn) {
-          downloadImageBtn.addEventListener('click', downloadImage);
+          downloadImageBtn.addEventListener('click', downloadImageWithProgress);
         }
         
         if (undoBtn) {
@@ -6582,6 +6687,176 @@
       }
     }
     
+    // Progress bar functionality
+    function showProgressBar(title = 'Procesando...') {
+      const overlay = document.getElementById('progress-overlay');
+      const titleElement = document.getElementById('progress-title');
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      const progressEta = document.getElementById('progress-eta');
+      
+      if (overlay && titleElement) {
+        titleElement.textContent = title;
+        progressBar.style.width = '0%';
+        progressText.textContent = '0%';
+        progressEta.textContent = 'Calculando tiempo...';
+        overlay.classList.add('show');
+      }
+    }
+    
+    function updateProgress(percentage, message = '', eta = '') {
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      const progressEta = document.getElementById('progress-eta');
+      
+      if (progressBar && progressText) {
+        progressBar.style.width = `${percentage}%`;
+        progressText.textContent = `${Math.round(percentage)}%`;
+        
+        if (message) {
+          const titleElement = document.getElementById('progress-title');
+          if (titleElement) titleElement.textContent = message;
+        }
+        
+        if (eta && progressEta) {
+          progressEta.textContent = eta;
+        }
+      }
+    }
+    
+    function hideProgressBar() {
+      const overlay = document.getElementById('progress-overlay');
+      if (overlay) {
+        overlay.classList.remove('show');
+      }
+    }
+    
+    // Enhanced progress simulation for download operations
+    async function simulateProgressSteps(steps, totalDuration = 3000) {
+      const stepDuration = totalDuration / steps.length;
+      const startTime = Date.now();
+      
+      for (let i = 0; i < steps.length; i++) {
+        const step = steps[i];
+        const progress = ((i + 1) / steps.length) * 100;
+        const elapsed = Date.now() - startTime;
+        const estimatedTotal = (elapsed / (i + 1)) * steps.length;
+        const remaining = Math.max(0, estimatedTotal - elapsed);
+        
+        const eta = remaining > 1000 
+          ? `${Math.ceil(remaining / 1000)}s restantes`
+          : `${Math.ceil(remaining)}ms restantes`;
+        
+        updateProgress(progress, step.message, eta);
+        
+        // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, step.duration || stepDuration));
+      }
+    }
+    
+    // Enhanced download function with progress bar
+    async function downloadImageWithProgress() {
+      if (!canvas) {
+        showError('No hay imagen para descargar.');
+        return;
+      }
+
+      if (!currentFile) {
+        showError('Por favor, selecciona una imagen primero.');
+        return;
+      }
+      
+      try {
+        // Show progress bar
+        showProgressBar('Iniciando descarga...');
+        
+        // Define download steps
+        const downloadSteps = [
+          { message: 'Obteniendo metadatos...', duration: 300 },
+          { message: 'Aplicando metadatos...', duration: 400 },
+          { message: 'Generando nombre de archivo...', duration: 200 },
+          { message: 'Configurando formato de salida...', duration: 300 },
+          { message: 'Procesando imagen...', duration: 600 },
+          { message: 'Generando archivo...', duration: 500 },
+          { message: 'Iniciando descarga...', duration: 400 }
+        ];
+        
+        // Start progress simulation
+        const progressPromise = simulateProgressSteps(downloadSteps, 2800);
+        
+        // Obtener metadatos antes de la descarga
+        const metadata = MetadataManager.getMetadata();
+        const exifData = MetadataManager.applyMetadataToImage(canvas);
+        
+        // Wait for initial progress steps
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Mostrar resumen de metadatos si están presentes
+        if (metadata.title || metadata.author || metadata.copyright || metadata.latitude) {
+          console.log('Metadatos aplicados:', metadata);
+          
+          let metaInfo = [];
+          if (metadata.title) metaInfo.push(`Título: ${metadata.title}`);
+          if (metadata.author) metaInfo.push(`Autor: ${metadata.author}`);
+          if (metadata.copyright) metaInfo.push(`Copyright: ${metadata.copyright}`);
+          if (metadata.latitude && metadata.longitude) {
+            metaInfo.push(`Ubicación: ${metadata.latitude}, ${metadata.longitude}`);
+          }
+          
+          console.log('Resumen de metadatos aplicados:\n' + metaInfo.join('\n'));
+        }
+        
+        // Wait for more progress
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Generar nombre del archivo basado en el título o usar uno por defecto
+        let filename = 'imagen-editada';
+        
+        if (metadata.title && metadata.title.trim()) {
+          filename = metadata.title.trim();
+        } else if (currentFile && currentFile.name) {
+          filename = currentFile.name.replace(/\.[^/.]+$/, '');
+        }
+        
+        // Limpiar el nombre de archivo
+        filename = sanitizeFilename(filename);
+        
+        // Usar el formato seleccionado en lugar de la extensión original
+        const extension = getFileExtension(outputFormat);
+        const fullFilename = `${filename}.${extension}`;
+        
+        // Wait for processing steps
+        await new Promise(resolve => setTimeout(resolve, 900));
+        
+        // Obtener el tipo MIME basado en el formato seleccionado
+        const mimeType = getMimeType(outputFormat);
+        
+        // Complete progress
+        await progressPromise;
+        
+        // Fallback para navegadores que no soportan la API o si falla
+        const link = document.createElement('a');
+        link.download = fullFilename;
+        link.href = canvas.toDataURL(mimeType, outputQuality);
+        
+        // Simular click
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Hide progress bar
+        hideProgressBar();
+        
+        const qualityText = outputFormat === 'png' ? '' : ` (calidad: ${Math.round(outputQuality * 100)}%)`;
+        showSuccess(`Imagen descargada en formato ${outputFormat.toUpperCase()}${qualityText}!`);
+        
+      } catch (error) {
+        console.error('Error al descargar:', error);
+        hideProgressBar();
+        showError('Error al descargar la imagen.');
+      }
+    }
+    
     
     // Hide image info when no image is loaded
     function hideImageInfo() {
@@ -7124,5 +7399,18 @@
       canvas.style.filter = filterString;
     }
   </script>
+
+  <!-- Progress Overlay -->
+  <div id="progress-overlay" class="progress-overlay">
+    <div class="progress-container">
+      <div class="progress-title" id="progress-title">Preparando descarga...</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0%</div>
+      <div class="progress-eta" id="progress-eta">Calculando tiempo...</div>
+    </div>
+  </div>
+
 </body>
 </html>
