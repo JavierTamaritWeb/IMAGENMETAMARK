@@ -784,6 +784,38 @@
       text-transform: none !important;
     }
 
+    /* Character counters */
+    .char-counter {
+      font-size: 0.75rem;
+      text-align: right;
+      margin-top: 4px;
+      transition: color 0.3s ease;
+    }
+    
+    .char-counter.good {
+      color: #059669; /* green-600 */
+    }
+    
+    .char-counter.warning {
+      color: #d97706; /* amber-600 */
+    }
+    
+    .char-counter.danger {
+      color: #dc2626; /* red-600 */
+    }
+    
+    [data-theme="dark"] .char-counter.good {
+      color: #10b981; /* green-500 */
+    }
+    
+    [data-theme="dark"] .char-counter.warning {
+      color: #f59e0b; /* amber-500 */
+    }
+    
+    [data-theme="dark"] .char-counter.danger {
+      color: #ef4444; /* red-500 */
+    }
+
     /* Asegurar que el texto de botones esté en una sola línea */
     .btn,
     button,
@@ -2796,6 +2828,7 @@
                       <input type="text" id="metaTitle" name="metaTitle"
                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
                              placeholder="Título de la imagen">
+                      <div class="char-counter" id="title-counter">0/60 caracteres</div>
                     </div>
                     <div class="metadata-field">
                       <label for="metaAuthor">Autor</label>
@@ -2863,12 +2896,14 @@
                     <textarea id="description" name="description" rows="3"
                               placeholder="Describe brevemente el contenido de la imagen: paisaje, retrato, evento, objeto, etc. Esta información ayudará a catalogar y encontrar la imagen más fácilmente."
                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-textarea"></textarea>
+                    <div class="char-counter" id="description-counter">0/160 caracteres</div>
                   </div>
                   <div class="mb-4">
                     <label for="keywords" class="block text-gray-700 font-medium mb-2 form-label">Palabras clave (separadas por comas)</label>
                     <input type="text" id="keywords" name="keywords"
                            placeholder="naturaleza, paisaje, montaña, fotografía, viaje, aventura, cielo, nubes"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                    <div class="char-counter" id="keywords-counter">0/200 caracteres</div>
                   </div>
                   <div>
                     <button type="submit"
@@ -3972,6 +4007,9 @@
         
         // Cargar metadatos guardados
         MetadataManager.loadSavedMetadata();
+        
+        // Initialize character counters
+        initCharacterCounters();
         
         // Inicializar estado de marcas de agua
         setTimeout(() => {
@@ -6191,6 +6229,56 @@
           }
         }, 300);
       }, 3000);
+    }
+    
+    // Character counter functionality
+    function initCharacterCounters() {
+      const fields = [
+        { id: 'metaTitle', counter: 'title-counter', limit: 60 },
+        { id: 'description', counter: 'description-counter', limit: 160 },
+        { id: 'keywords', counter: 'keywords-counter', limit: 200 }
+      ];
+
+      fields.forEach(field => {
+        const input = document.getElementById(field.id);
+        const counter = document.getElementById(field.counter);
+        
+        if (input && counter) {
+          // Update counter on input
+          input.addEventListener('input', function() {
+            updateCharacterCount(this, counter, field.limit);
+          });
+          
+          // Initial count
+          updateCharacterCount(input, counter, field.limit);
+        }
+      });
+    }
+
+    function updateCharacterCount(input, counter, limit) {
+      const length = input.value.length;
+      const remaining = limit - length;
+      
+      // Update counter text
+      counter.textContent = `${length}/${limit} caracteres`;
+      
+      // Update color based on usage
+      counter.classList.remove('good', 'warning', 'danger');
+      
+      if (length <= limit * 0.7) {
+        counter.classList.add('good');
+      } else if (length <= limit * 0.9) {
+        counter.classList.add('warning');
+      } else {
+        counter.classList.add('danger');
+      }
+      
+      // Show remaining characters if close to limit
+      if (remaining <= 10 && remaining >= 0) {
+        counter.textContent = `${length}/${limit} (${remaining} restantes)`;
+      } else if (length > limit) {
+        counter.textContent = `${length}/${limit} (${Math.abs(remaining)} sobre el límite)`;
+      }
     }
     
     // Hide image info when no image is loaded
