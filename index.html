@@ -6,12 +6,6 @@
   <title>ImageMetadataPro - Editor de metadatos e imágenes</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- @jsquash libraries for image conversion -->
-  <script src="https://cdn.jsdelivr.net/npm/@jsquash/avif@1.1.0/index.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@jsquash/png@2.1.0/index.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@jsquash/jpeg@1.1.0/index.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@jsquash/webp@1.1.0/index.min.js"></script>
   <style id="app-style">
     /* Theme Variables - Enhanced dark mode support */
     :root {
@@ -1843,6 +1837,85 @@
       border-left-color: #f87171;
     }
 
+    /* Image Info Styles */
+    #image-info {
+      background-color: var(--bg-accent);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    #image-info .text-blue-800 {
+      color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    #image-info .text-blue-600 {
+      color: var(--text-secondary);
+    }
+
+    /* Dark mode for image info */
+    [data-theme="dark"] #image-info {
+      background-color: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    [data-theme="dark"] #image-info .text-blue-800 {
+      color: var(--accent-primary);
+    }
+
+    [data-theme="dark"] #image-info .text-blue-600 {
+      color: var(--text-tertiary);
+    }
+
+    /* Resize Section Styles */
+    #current-size-display {
+      background-color: var(--bg-accent);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .preset-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      transition: var(--transition);
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .preset-btn:hover {
+      background: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    .preset-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Dark mode for resize section */
+    [data-theme="dark"] #current-size-display {
+      background-color: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: var(--text-tertiary);
+    }
+
+    [data-theme="dark"] .preset-btn {
+      background: var(--bg-tertiary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .preset-btn:hover {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
     [data-theme="dark"] #format-description,
     [data-theme="dark"] #format-compatibility {
       color: var(--text-secondary);
@@ -3205,6 +3278,79 @@
                       </div>
                     </div>
 
+                    <!-- Image Resize Section -->
+                    <div class="config-section">
+                      <h4 class="config-title">
+                        <i class="fas fa-expand-arrows-alt"></i>Redimensionar imagen
+                      </h4>
+                      
+                      <!-- Current size display -->
+                      <div id="current-size-display" class="mb-3 p-2 bg-gray-50 rounded text-sm hidden">
+                        <span class="text-gray-600">Tamaño actual: </span>
+                        <span id="current-dimensions" class="font-medium">-</span>
+                      </div>
+                      
+                      <!-- Resize controls -->
+                      <div class="space-y-3">
+                        <!-- Maintain aspect ratio -->
+                        <div class="flex items-center">
+                          <input type="checkbox" id="maintain-aspect-ratio" class="mr-2" checked>
+                          <label for="maintain-aspect-ratio" class="text-sm cursor-pointer">Mantener proporción</label>
+                        </div>
+                        
+                        <!-- Dimension inputs -->
+                        <div class="grid grid-cols-2 gap-3">
+                          <div>
+                            <label for="resize-width" class="block text-sm font-medium mb-1">Ancho (px)</label>
+                            <input type="number" id="resize-width" min="1" max="8192" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                          </div>
+                          <div>
+                            <label for="resize-height" class="block text-sm font-medium mb-1">Alto (px)</label>
+                            <input type="number" id="resize-height" min="1" max="8192"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input">
+                          </div>
+                        </div>
+                        
+                        <!-- Size presets -->
+                        <div>
+                          <label class="block text-sm font-medium mb-2">Tamaños predefinidos</label>
+                          <div class="grid grid-cols-2 gap-2">
+                            <button type="button" class="preset-btn btn-sm" data-width="1920" data-height="1080">
+                              Full HD<br><span class="text-xs opacity-75">1920×1080</span>
+                            </button>
+                            <button type="button" class="preset-btn btn-sm" data-width="1280" data-height="720">
+                              HD<br><span class="text-xs opacity-75">1280×720</span>
+                            </button>
+                            <button type="button" class="preset-btn btn-sm" data-width="800" data-height="600">
+                              SVGA<br><span class="text-xs opacity-75">800×600</span>
+                            </button>
+                            <button type="button" class="preset-btn btn-sm" data-width="1024" data-height="1024">
+                              Cuadrado<br><span class="text-xs opacity-75">1024×1024</span>
+                            </button>
+                            <button type="button" class="preset-btn btn-sm" data-width="1080" data-height="1080">
+                              Instagram<br><span class="text-xs opacity-75">1080×1080</span>
+                            </button>
+                            <button type="button" class="preset-btn btn-sm" data-width="1200" data-height="630">
+                              Facebook<br><span class="text-xs opacity-75">1200×630</span>
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <!-- Resize actions -->
+                        <div class="flex gap-2">
+                          <button type="button" id="apply-resize" class="btn btn-primary flex-1">
+                            <i class="fas fa-check"></i>
+                            Aplicar redimensión
+                          </button>
+                          <button type="button" id="reset-original-size" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i>
+                            Original
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- Format Selection -->
                     <div class="config-section">
                       <h4 class="config-title">
@@ -3249,6 +3395,33 @@
                 </button>
               </div>
             </div>
+            
+            <!-- Image Info Section -->
+            <div id="image-info" class="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4 hidden">
+              <div class="flex items-start">
+                <i class="fas fa-info-circle text-blue-600 mt-1 mr-2"></i>
+                <div class="flex-1">
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div>
+                      <span class="text-blue-800 font-medium">Dimensiones:</span>
+                      <div id="image-dimensions" class="text-blue-600">-</div>
+                    </div>
+                    <div>
+                      <span class="text-blue-800 font-medium">Tamaño:</span>
+                      <div id="image-size" class="text-blue-600">-</div>
+                    </div>
+                    <div>
+                      <span class="text-blue-800 font-medium">Formato:</span>
+                      <div id="image-format" class="text-blue-600">-</div>
+                    </div>
+                    <div>
+                      <span class="text-blue-800 font-medium">Píxeles:</span>
+                      <div id="image-pixels" class="text-blue-600">-</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="preview__container relative">
               <canvas id="preview-canvas" class="preview__canvas"></canvas>
             </div>
@@ -3267,10 +3440,6 @@
                 <button id="reset-changes" class="btn btn-primary button--action">
                   <i class="fas fa-refresh" aria-hidden="true"></i>
                   Restablecer
-                </button>
-                <button id="test-conversion" class="btn btn-secondary button--action">
-                  <i class="fas fa-vial" aria-hidden="true"></i>
-                  Test conversión
                 </button>
                 <button id="download-image" class="btn btn-primary button--action">
                   <i class="fas fa-download" aria-hidden="true"></i>
@@ -3296,6 +3465,10 @@
     let currentFile = null;
     let originalExtension = 'jpg';
     let lastDownloadDirectory = null;
+    
+    // Variables para redimensionado
+    let originalImageDimensions = { width: 0, height: 0 };
+    let isResizing = false;
     
     // Variables para configuración de salida
     let outputQuality = 0.8; // Valor por defecto (80%)
@@ -3615,10 +3788,6 @@
       setupFileNaming();
       initializeTheme();
       
-      // Test format conversion on load
-      setTimeout(() => {
-        testFormatConversion();
-      }, 1000);
     });
 
     // Enhanced utility functions for better code maintainability
@@ -4430,16 +4599,11 @@
         // Action buttons
         const resetChangesBtn = document.getElementById('reset-changes');
         const downloadImageBtn = document.getElementById('download-image');
-        const testConversionBtn = document.getElementById('test-conversion');
         const undoBtn = document.getElementById('undo-btn');
         const redoBtn = document.getElementById('redo-btn');
         
         if (resetChangesBtn) {
           resetChangesBtn.addEventListener('click', resetChanges);
-        }
-        
-        if (testConversionBtn) {
-          testConversionBtn.addEventListener('click', testFormatConversion);
         }
         
         if (downloadImageBtn) {
@@ -4879,8 +5043,13 @@
 
           currentImage = img;
           
+          // Store original dimensions for resize functionality
+          originalWidth = img.width;
+          originalHeight = img.height;
+          
           console.log('=== IMAGEN CARGADA ===');
           console.log('currentImage asignado:', !!currentImage);
+          console.log('Dimensiones originales:', originalWidth, 'x', originalHeight);
           
           // Sanitizar y mostrar información del archivo
           const sanitizedFileName = SecurityManager.sanitizeText(fileName);
@@ -4911,6 +5080,18 @@
           
           // Configurar canvas
           setupCanvas();
+          
+          // Mostrar información de la imagen
+          updateImageInfo();
+          
+          // Initialize resize functionality
+          initResize();
+          
+          // Update resize inputs with original dimensions
+          const widthInput = document.getElementById('resize-width');
+          const heightInput = document.getElementById('resize-height');
+          if (widthInput) widthInput.value = originalWidth;
+          if (heightInput) heightInput.value = originalHeight;
           
           // Actualizar vista previa
           updatePreview();
@@ -5732,93 +5913,39 @@
       return mimeTypes[format] || 'image/jpeg';
     }
 
-    // Enhanced canvasToBlob function with @jsquash libraries
+    // Enhanced canvasToBlob function using native browser capabilities
     async function canvasToBlob(canvas, mimeType, quality = 0.9) {
       try {
-        // Wait for libraries to load
-        await ensureLibrariesLoaded();
-        
-        // Convert canvas to ImageData for @jsquash processing
-        const ctx = canvas.getContext('2d');
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        
-        let outputBuffer;
-        
-        // Use @jsquash libraries for better compression and format support
-        switch (mimeType) {
-          case 'image/avif':
-            if (window.avif) {
-              outputBuffer = await window.avif.encode(imageData, {
-                quality: Math.round(quality * 100),
-                speed: 6 // Good balance between speed and compression
-              });
+        // Use native canvas.toBlob method with fallback support
+        return await new Promise((resolve, reject) => {
+          // Check if browser supports the requested format
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = 1;
+          tempCanvas.height = 1;
+          
+          // Test format support
+          const testDataUrl = tempCanvas.toDataURL(mimeType);
+          if (!testDataUrl.startsWith(`data:${mimeType}`)) {
+            // Format not supported, fallback to JPEG
+            console.warn(`Format ${mimeType} not supported, falling back to JPEG`);
+            mimeType = 'image/jpeg';
+          }
+          
+          // Convert canvas to blob
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
             } else {
-              console.warn('AVIF encoder not available, falling back to canvas method');
-              return canvasToBlob_fallback(canvas, mimeType, quality);
+              reject(new Error('Failed to convert canvas to blob'));
             }
-            break;
-            
-          case 'image/webp':
-            if (window.webp) {
-              outputBuffer = await window.webp.encode(imageData, {
-                quality: Math.round(quality * 100),
-                method: 4 // Good compression method
-              });
-            } else {
-              return canvasToBlob_fallback(canvas, mimeType, quality);
-            }
-            break;
-            
-          case 'image/jpeg':
-            if (window.jpeg) {
-              outputBuffer = await window.jpeg.encode(imageData, {
-                quality: Math.round(quality * 100),
-                baseline: false,
-                arithmetic: false,
-                progressive: true,
-                optimize_coding: true
-              });
-            } else {
-              return canvasToBlob_fallback(canvas, mimeType, quality);
-            }
-            break;
-            
-          case 'image/png':
-            if (window.png) {
-              outputBuffer = await window.png.encode(imageData);
-            } else {
-              return canvasToBlob_fallback(canvas, mimeType, quality);
-            }
-            break;
-            
-          default:
-            return canvasToBlob_fallback(canvas, mimeType, quality);
-        }
-        
-        // Convert buffer to blob
-        return new Blob([outputBuffer], { type: mimeType });
+          }, mimeType, quality);
+        });
         
       } catch (error) {
-        console.error('Error with @jsquash conversion:', error);
-        // Fallback to canvas method
-        return canvasToBlob_fallback(canvas, mimeType, quality);
+        console.error('Error with canvas conversion:', error);
+        // Final fallback to JPEG
+        return canvasToBlob_fallback(canvas, 'image/jpeg', quality);
       }
-    }
-    
-    // Ensure @jsquash libraries are loaded
-    async function ensureLibrariesLoaded() {
-      const maxRetries = 10;
-      const retryDelay = 100;
-      
-      for (let i = 0; i < maxRetries; i++) {
-        if (window.avif && window.webp && window.jpeg && window.png) {
-          return true;
-        }
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-      }
-      
-      console.warn('Some @jsquash libraries may not be fully loaded');
-      return false;
     }
     
     // Fallback function using canvas native methods
@@ -5837,93 +5964,240 @@
       });
     }
 
-    // Test function to verify format conversion
-    async function testFormatConversion() {
-      console.log('🔧 Testing format conversion capabilities...');
-      UIManager.showLoadingState('Probando conversión de formatos...');
+    // Update image information display
+    function updateImageInfo() {
+      const imageInfoElement = document.getElementById('image-info');
+      const dimensionsElement = document.getElementById('image-dimensions');
+      const sizeElement = document.getElementById('image-size');
+      const formatElement = document.getElementById('image-format');
+      const pixelsElement = document.getElementById('image-pixels');
+      const currentDimensionsElement = document.getElementById('current-dimensions');
+      const currentSizeDisplay = document.getElementById('current-size-display');
+      
+      if (!currentImage || !imageInfoElement) return;
+      
+      // Show image info panel
+      imageInfoElement.classList.remove('hidden');
+      
+      // Update dimensions
+      if (dimensionsElement) {
+        dimensionsElement.textContent = `${currentImage.width} × ${currentImage.height}`;
+      }
+      
+      // Update current size display in resize section
+      if (currentDimensionsElement && currentSizeDisplay) {
+        currentDimensionsElement.textContent = `${currentImage.width} × ${currentImage.height}`;
+        currentSizeDisplay.classList.remove('hidden');
+      }
+      
+      // Update file size
+      if (sizeElement && currentFile) {
+        sizeElement.textContent = formatFileSize(currentFile.size);
+      } else if (sizeElement) {
+        sizeElement.textContent = 'Calculando...';
+      }
+      
+      // Update format
+      if (formatElement && currentFile) {
+        const fileType = currentFile.type.split('/')[1].toUpperCase();
+        formatElement.textContent = fileType || originalExtension.toUpperCase();
+      } else if (formatElement) {
+        formatElement.textContent = originalExtension.toUpperCase();
+      }
+      
+      // Update total pixels
+      if (pixelsElement) {
+        const totalPixels = currentImage.width * currentImage.height;
+        pixelsElement.textContent = formatNumber(totalPixels);
+      }
+    }
+    
+    // Format file size in human readable format
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+    
+    // Format number with thousands separator
+    function formatNumber(num) {
+      return num.toLocaleString('es-ES') + ' px';
+    }
+
+    // Initialize resize functionality
+    function initResize() {
+      const widthInput = document.getElementById('resize-width');
+      const heightInput = document.getElementById('resize-height');
+      const aspectRatioCheckbox = document.getElementById('maintain-aspect-ratio');
+      const applyResizeBtn = document.getElementById('apply-resize');
+      const resetResizeBtn = document.getElementById('reset-original-size');
+      
+      // Preset buttons
+      const presetButtons = document.querySelectorAll('.preset-btn');
+      
+      // Add event listeners to dimension inputs
+      if (widthInput) {
+        widthInput.addEventListener('input', function() {
+          if (aspectRatioCheckbox && aspectRatioCheckbox.checked && originalWidth && originalHeight) {
+            const newHeight = Math.round((this.value * originalHeight) / originalWidth);
+            if (heightInput) heightInput.value = newHeight;
+          }
+        });
+      }
+      
+      if (heightInput) {
+        heightInput.addEventListener('input', function() {
+          if (aspectRatioCheckbox && aspectRatioCheckbox.checked && originalWidth && originalHeight) {
+            const newWidth = Math.round((this.value * originalWidth) / originalHeight);
+            if (widthInput) widthInput.value = newWidth;
+          }
+        });
+      }
+      
+      // Preset buttons functionality
+      presetButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const width = this.getAttribute('data-width');
+          const height = this.getAttribute('data-height');
+          
+          if (widthInput) widthInput.value = width;
+          if (heightInput) heightInput.value = height;
+          
+          // Update button visual state
+          presetButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-blue-500'));
+          this.classList.add('ring-2', 'ring-blue-500');
+        });
+      });
+      
+      // Apply resize functionality
+      if (applyResizeBtn) {
+        applyResizeBtn.addEventListener('click', function() {
+          const newWidth = parseInt(widthInput.value);
+          const newHeight = parseInt(heightInput.value);
+          
+          if (newWidth > 0 && newHeight > 0 && currentImage) {
+            resizeImage(newWidth, newHeight);
+          }
+        });
+      }
+      
+      // Reset resize functionality
+      if (resetResizeBtn) {
+        resetResizeBtn.addEventListener('click', function() {
+          if (originalWidth && originalHeight) {
+            if (widthInput) widthInput.value = originalWidth;
+            if (heightInput) heightInput.value = originalHeight;
+            presetButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-blue-500'));
+            
+            if (currentImage) {
+              resizeImage(originalWidth, originalHeight);
+            }
+          }
+        });
+      }
+    }
+
+    // Resize image function
+    function resizeImage(newWidth, newHeight) {
+      if (!currentImage) {
+        console.error('No current image available');
+        return;
+      }
+      
+      // Validate dimensions
+      if (newWidth <= 0 || newHeight <= 0) {
+        console.error('Invalid dimensions:', newWidth, newHeight);
+        return;
+      }
       
       try {
-        // Wait for libraries to load
-        await ensureLibrariesLoaded();
+        // Create temporary canvas for resizing
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
         
-        // Test each @jsquash library availability
-        const testResults = {
-          avif: !!window.avif,
-          webp: !!window.webp, 
-          jpeg: !!window.jpeg,
-          png: !!window.png
+        tempCanvas.width = newWidth;
+        tempCanvas.height = newHeight;
+        
+        // Draw resized image with high quality
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
+        tempCtx.drawImage(currentImage, 0, 0, newWidth, newHeight);
+        
+        // Create new image from the resized canvas
+        const newImage = new Image();
+        newImage.onload = function() {
+          // Update current image
+          currentImage = newImage;
+          
+          // Update preview canvas
+          const canvas = document.getElementById('preview-canvas');
+          if (canvas) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            ctx.clearRect(0, 0, newWidth, newHeight);
+            ctx.drawImage(newImage, 0, 0);
+            
+            // Re-apply watermark if present
+            updatePreview();
+          }
+          
+          // Update image info display
+          updateImageInfo();
+          
+          // Show success message
+          showSuccessMessage(`Imagen redimensionada a ${newWidth} × ${newHeight}`);
+          
+          console.log('Image resized successfully to:', newWidth, 'x', newHeight);
         };
         
-        console.log('📋 Libraries status:', testResults);
+        newImage.onerror = function() {
+          console.error('Error creating resized image');
+        };
         
-        // Create test canvas
-        const testCanvas = document.createElement('canvas');
-        testCanvas.width = 100;
-        testCanvas.height = 100;
-        const ctx = testCanvas.getContext('2d');
-        
-        // Draw test pattern
-        ctx.fillStyle = '#ff0000';
-        ctx.fillRect(0, 0, 50, 50);
-        ctx.fillStyle = '#00ff00';
-        ctx.fillRect(50, 0, 50, 50);
-        ctx.fillStyle = '#0000ff';
-        ctx.fillRect(0, 50, 50, 50);
-        ctx.fillStyle = '#ffff00';
-        ctx.fillRect(50, 50, 50, 50);
-        
-        // Test conversion to each format
-        const formats = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
-        const conversionResults = {};
-        
-        for (const format of formats) {
-          try {
-            const startTime = performance.now();
-            const blob = await canvasToBlob(testCanvas, format, 0.8);
-            const endTime = performance.now();
-            
-            conversionResults[format] = {
-              success: true,
-              size: blob.size,
-              time: Math.round(endTime - startTime),
-              compression: Math.round((blob.size / (100 * 100 * 4)) * 100)
-            };
-            
-            console.log(`✅ ${format}: ${blob.size} bytes (${Math.round(endTime - startTime)}ms)`);
-          } catch (error) {
-            conversionResults[format] = {
-              success: false,
-              error: error.message
-            };
-            console.error(`❌ ${format}: ${error.message}`);
-          }
-        }
-        
-        // Show results in UI
-        const successCount = Object.values(conversionResults).filter(r => r.success).length;
-        const message = Object.entries(conversionResults)
-          .map(([format, result]) => {
-            const formatName = format.split('/')[1].toUpperCase();
-            return result.success 
-              ? `${formatName}: ✅ ${result.size}b (${result.time}ms)`
-              : `${formatName}: ❌ Error`;
-          })
-          .join(' | ');
-          
-        UIManager.hideLoadingState();
-        
-        if (successCount === formats.length) {
-          UIManager.showSuccess(`🎉 Todas las conversiones funcionan: ${message}`);
-        } else {
-          UIManager.showWarning(`⚠️ ${successCount}/${formats.length} conversiones exitosas: ${message}`);
-        }
-        
-        return conversionResults;
+        // Convert canvas to data URL and set as image source
+        newImage.src = tempCanvas.toDataURL('image/png');
         
       } catch (error) {
-        UIManager.hideLoadingState();
-        UIManager.showError(`❌ Error en test de conversión: ${error.message}`);
-        console.error('Test conversion error:', error);
+        console.error('Error during resize operation:', error);
+        showSuccessMessage('Error al redimensionar la imagen');
+      }
+    }
+
+    // Show success message
+    function showSuccessMessage(message) {
+      // Create or update success message element
+      let successElement = document.getElementById('success-message');
+      if (!successElement) {
+        successElement = document.createElement('div');
+        successElement.id = 'success-message';
+        successElement.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50 transition-opacity duration-300';
+        document.body.appendChild(successElement);
+      }
+      
+      successElement.textContent = message;
+      successElement.style.opacity = '1';
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        successElement.style.opacity = '0';
+        setTimeout(() => {
+          if (successElement.parentNode) {
+            successElement.parentNode.removeChild(successElement);
+          }
+        }, 300);
+      }, 3000);
+    }
+    
+    // Hide image info when no image is loaded
+    function hideImageInfo() {
+      const imageInfoElement = document.getElementById('image-info');
+      if (imageInfoElement) {
+        imageInfoElement.classList.add('hidden');
       }
     }
 
@@ -5947,6 +6221,7 @@
       // Ocultar elementos
       document.getElementById('file-info').classList.add('file-info--hidden');
       document.getElementById('editor-container').classList.add('editor-container--hidden');
+      hideImageInfo(); // Ocultar información de imagen
       
       // Limpiar canvas
       if (ctx) {
